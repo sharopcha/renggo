@@ -1,6 +1,5 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { createClient } from "./supabase/server"
 
 interface CreateBookingData {
@@ -15,7 +14,6 @@ interface CreateBookingData {
 }
 
 export async function createBooking(data: CreateBookingData) {
-  const cookieStore = cookies()
   const supabase = await createClient()
 
   try {
@@ -70,8 +68,9 @@ export async function createBooking(data: CreateBookingData) {
   }
 }
 
-export async function updateBookingStatus(bookingId: string, status: string, hostNotes?: string) {
-  const cookieStore = cookies()
+type UpdateBookingStatus = "pending" | "confirmed" | "active" | "completed" | "cancelled" | null | undefined;
+
+export async function updateBookingStatus(bookingId: string, status: UpdateBookingStatus, hostNotes?: string) {
   const supabase = await createClient()
 
   try {

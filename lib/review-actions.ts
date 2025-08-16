@@ -1,6 +1,5 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { revalidatePath } from "next/cache"
 import { createClient } from "./supabase/server"
 
@@ -78,7 +77,7 @@ export async function submitReview(formData: FormData) {
     booking_id: bookingId,
     rating,
     comment: comment.trim(),
-    type,
+    review_type: type,
   })
 
   if (error) {
@@ -106,7 +105,7 @@ export async function getReviewStats(userId: string) {
 
   const totalReviews = receivedReviews?.length || 0
   const averageRating =
-    totalReviews > 0 ? receivedReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews : 0
+    totalReviews > 0 ? receivedReviews.reduce((sum, review) => sum + review.rating!, 0) / totalReviews : 0
 
   return {
     averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place

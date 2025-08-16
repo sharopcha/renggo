@@ -1,10 +1,8 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { createClient } from "./supabase/server"
 
 export async function sendMessage(bookingId: string, content: string) {
-  const cookieStore = cookies()
   const supabase = await createClient()
 
   try {
@@ -46,7 +44,6 @@ export async function sendMessage(bookingId: string, content: string) {
 }
 
 export async function markMessagesAsRead(bookingId: string) {
-  const cookieStore = cookies()
   const supabase = await createClient()
 
   try {

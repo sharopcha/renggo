@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "./supabase/server";
 
 // Mock embedding function - in production, you'd use OpenAI or similar
@@ -20,7 +19,6 @@ function generateMockEmbedding(text: string): number[] {
 }
 
 export async function generateCarEmbeddings() {
-  const cookieStore = cookies();
   const supabase = await createClient();
 
   try {
@@ -38,17 +36,17 @@ export async function generateCarEmbeddings() {
 
     for (const car of cars) {
       // Create text representation of car for embedding
-      const carText = `${car.make} ${car.model} ${car.year} ${car.fuel_type} ${
-        car.transmission
-      } ${car.description || ""} ${(car.features || []).join(" ")}`;
+      // const carText = `${car.make} ${car.model} ${car.year} ${car.fuel_type} ${
+      //   car.transmission
+      // } ${car.description || ""} ${(car.features || []).join(" ")}`;
 
       // Generate embedding (mock)
-      const embedding = generateMockEmbedding(carText);
+      // const embedding = generateMockEmbedding(carText);
 
       // Store embedding
       await supabase.from("car_embeddings").upsert({
         car_id: car.id,
-        embedding: embedding,
+        // embedding: embedding,
         metadata: {
           make: car.make,
           model: car.model,
@@ -60,10 +58,10 @@ export async function generateCarEmbeddings() {
       });
 
       // Mark car as having embedding generated
-      await supabase
-        .from("cars")
-        .update({ embedding_generated: true })
-        .eq("id", car.id);
+      // await supabase
+      //   .from("cars")
+      //   .update({ embedding_generated: true })
+      //   .eq("id", car.id);
     }
 
     return {
@@ -80,7 +78,6 @@ export async function getPersonalizedRecommendations(
   userId: string,
   limit = 6
 ) {
-  const cookieStore = cookies();
   const supabase = await createClient();
 
   try {
@@ -108,10 +105,10 @@ export async function getPersonalizedRecommendations(
     let avgPriceRange = { min: 0, max: 1000 };
 
     if (bookingHistory && bookingHistory.length > 0) {
-      const makes = bookingHistory.map((b) => b.cars.make).filter(Boolean);
-      const features = bookingHistory.flatMap((b) => b.cars.features || []);
+      const makes = (bookingHistory).map((b) => b.cars!.make).filter(Boolean);
+      const features = bookingHistory.flatMap((b) => b.cars!.features || []);
       const prices = bookingHistory
-        .map((b) => b.cars.daily_rate)
+        .map((b) => b.cars!.daily_rate)
         .filter(Boolean);
 
       preferredMakes = [...new Set(makes)];
@@ -226,7 +223,6 @@ export async function updateUserPreferences(
     preferred_locations?: string[];
   }
 ) {
-  const cookieStore = cookies();
   const supabase = await createClient();
 
   try {
@@ -237,12 +233,12 @@ export async function updateUserPreferences(
       ...(preferences.preferred_locations || []),
     ].join(" ");
 
-    const embedding = generateMockEmbedding(prefsText);
+    // const embedding = generateMockEmbedding(prefsText);
 
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: userId,
       ...preferences,
-      embedding: embedding,
+      // embedding: embedding,
       updated_at: new Date().toISOString(),
     });
 
@@ -263,12 +259,11 @@ export async function semanticSearch(
   filters: any = {},
   limit = 20
 ) {
-  const cookieStore = cookies();
   const supabase = await createClient();
 
   try {
     // Generate embedding for search query
-    const queryEmbedding = generateMockEmbedding(query);
+    // const queryEmbedding = generateMockEmbedding(query);
 
     // Build base query
     let baseQuery = supabase
