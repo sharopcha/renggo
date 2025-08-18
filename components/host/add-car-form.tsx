@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/client"
-import { Loader2, Upload, X, AlertCircle } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+import { Loader2, Upload, X, AlertCircle } from "lucide-react";
 
 const CAR_FEATURES = [
   "bluetooth",
@@ -27,14 +33,14 @@ const CAR_FEATURES = [
   "cruise_control",
   "keyless_entry",
   "automatic_transmission",
-]
+];
 
 export function AddCarForm() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [photos, setPhotos] = useState<File[]>([])
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [formData, setFormData] = useState({
     make: "",
     model: "",
@@ -51,136 +57,104 @@ export function AddCarForm() {
     mileage: "",
     house_rules: "",
     features: [] as string[],
-  })
+  });
 
   const handleFeatureChange = (feature: string, checked: boolean) => {
     setFormData((prev) => ({
       ...prev,
-      features: checked ? [...prev.features, feature] : prev.features.filter((f) => f !== feature),
-    }))
-  }
+      features: checked
+        ? [...prev.features, feature]
+        : prev.features.filter((f) => f !== feature),
+    }));
+  };
 
   const processFiles = (files: FileList | File[]) => {
-    const fileArray = Array.from(files)
-    setUploadError(null)
+    const fileArray = Array.from(files);
+    setUploadError(null);
 
-    console.log("[v0] Processing", fileArray.length, "files")
+    console.log("[v0] Processing", fileArray.length, "files");
 
     const validFiles = fileArray.filter((file) => {
       if (!file.type.startsWith("image/")) {
-        setUploadError("Please select only image files")
-        return false
+        setUploadError("Please select only image files");
+        return false;
       }
       if (file.size > 5 * 1024 * 1024) {
-        setUploadError("Images must be smaller than 5MB")
-        return false
+        setUploadError("Images must be smaller than 5MB");
+        return false;
       }
-      return true
-    })
+      return true;
+    });
 
-    const totalPhotos = photos.length + validFiles.length
+    const totalPhotos = photos.length + validFiles.length;
     if (totalPhotos > 10) {
-      setUploadError("Maximum 10 photos allowed")
-      const allowedCount = 10 - photos.length
-      setPhotos((prev) => [...prev, ...validFiles.slice(0, allowedCount)])
+      setUploadError("Maximum 10 photos allowed");
+      const allowedCount = 10 - photos.length;
+      setPhotos((prev) => [...prev, ...validFiles.slice(0, allowedCount)]);
     } else {
-      setPhotos((prev) => [...prev, ...validFiles])
+      setPhotos((prev) => [...prev, ...validFiles]);
     }
 
-    console.log("[v0] Added", validFiles.length, "valid files")
-  }
+    console.log("[v0] Added", validFiles.length, "valid files");
+  };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      processFiles(e.target.files)
+      processFiles(e.target.files);
     }
-    e.target.value = ""
-  }
+    e.target.value = "";
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
 
-    console.log("[v0] Files dropped")
+    console.log("[v0] Files dropped");
 
     if (e.dataTransfer.files) {
-      processFiles(e.dataTransfer.files)
+      processFiles(e.dataTransfer.files);
     }
-  }
+  };
 
   const handleUploadAreaClick = () => {
-    console.log("[v0] Upload area clicked")
-    const fileInput = document.getElementById("photo-upload") as HTMLInputElement
+    console.log("[v0] Upload area clicked");
+    const fileInput = document.getElementById(
+      "photo-upload"
+    ) as HTMLInputElement;
     if (fileInput) {
-      fileInput.click()
+      fileInput.click();
     }
-  }
+  };
 
   const removePhoto = (index: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index))
-    setUploadError(null)
-  }
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+    setUploadError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setUploadError(null)
+    e.preventDefault();
+    setLoading(true);
+    setUploadError(null);
 
     try {
-      console.log("[v0] Starting car submission process")
-
       const {
         data: { user },
-      } = await supabase.auth.getUser()
-      if (!user) throw new Error("Not authenticated")
+      } = await supabase.auth.getUser();
 
-      console.log("[v0] User authenticated:", user.id)
-
-      const { data: existingProfile, error: profileCheckError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("id", user.id)
-        .single()
-
-      if (profileCheckError && profileCheckError.code === "PGRST116") {
-        // Profile doesn't exist, create it
-        console.log("[v0] Profile doesn't exist, creating profile for user:", user.id)
-
-        const { error: profileCreateError } = await supabase.from("profiles").insert({
-          id: user.id,
-          email: user.email || "",
-          full_name: user.user_metadata?.full_name || user.user_metadata?.name || "",
-          avatar_url: user.user_metadata?.avatar_url || null,
-          phone: user.user_metadata?.phone || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-
-        if (profileCreateError) {
-          console.error("[v0] Failed to create profile:", profileCreateError)
-          throw new Error("Failed to create user profile. Please try again.")
-        }
-
-        console.log("[v0] Profile created successfully")
-      } else if (profileCheckError) {
-        console.error("[v0] Error checking profile:", profileCheckError)
-        throw new Error("Error verifying user profile. Please try again.")
-      } else {
-        console.log("[v0] Profile exists:", existingProfile.id)
-      }
+      if (!user) throw new Error("Not authenticated");
 
       const { data: car, error: carError } = await supabase
         .from("cars")
@@ -203,70 +177,68 @@ export function AddCarForm() {
           features: formData.features,
         })
         .select()
-        .single()
+        .single();
 
       if (carError) {
-        console.error("[v0] Car creation error:", carError)
-        throw carError
+        console.error("[v0] Car creation error:", carError);
+        throw carError;
       }
 
-      console.log("[v0] Car created successfully:", car.id)
-
       if (photos.length > 0) {
-        console.log("[v0] Starting photo upload for", photos.length, "photos")
-
         for (let i = 0; i < photos.length; i++) {
-          const photo = photos[i]
-          const fileExt = photo.name.split(".").pop()
-          const fileName = `${user.id}/${car.id}/${Date.now()}-${i}.${fileExt}`
+          const photo = photos[i];
+          const fileExt = photo.name.split(".").pop();
+          const fileName = `${user.id}/${car.id}/${Date.now()}-${i}.${fileExt}`;
 
-          console.log("[v0] Uploading photo", i + 1, ":", fileName)
+          console.log("[v0] Uploading photo", i + 1, ":", fileName);
 
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from("car-photos")
-            .upload(fileName, photo, {
+          const { data: uploadData, error: uploadError } =
+            await supabase.storage.from("car-photos").upload(fileName, photo, {
               cacheControl: "3600",
               upsert: false,
-            })
+            });
 
           if (uploadError) {
-            console.error("[v0] Photo upload error:", uploadError)
-            setUploadError(`Failed to upload photo ${i + 1}: ${uploadError.message}`)
-            continue
+            console.error("[v0] Photo upload error:", uploadError);
+            setUploadError(
+              `Failed to upload photo ${i + 1}: ${uploadError.message}`
+            );
+            continue;
           }
-
-          console.log("[v0] Photo uploaded successfully:", uploadData.path)
 
           const {
             data: { publicUrl },
-          } = supabase.storage.from("car-photos").getPublicUrl(fileName)
+          } = supabase.storage.from("car-photos").getPublicUrl(fileName);
 
-          console.log("[v0] Public URL generated:", publicUrl)
-
-          const { error: photoRecordError } = await supabase.from("car_photos").insert({
-            car_id: car.id,
-            photo_url: publicUrl,
-            is_primary: i === 0,
-            display_order: i,
-          })
+          const { error: photoRecordError } = await supabase
+            .from("car_photos")
+            .insert({
+              car_id: car.id,
+              photo_url: publicUrl,
+              is_primary: i === 0,
+              display_order: i,
+            });
 
           if (photoRecordError) {
-            console.error("[v0] Photo record error:", photoRecordError)
+            console.error("[v0] Photo record error:", photoRecordError);
           } else {
-            console.log("[v0] Photo record saved successfully")
+            console.log("[v0] Photo record saved successfully");
           }
         }
       }
 
-      console.log("[v0] Car listing process completed successfully")
-      router.push("/dashboard?success=car-added")
+      router.push("/dashboard?success=car-added");
     } catch (error) {
-      console.error("[v0] Error adding car:", error)
-      setUploadError(error instanceof Error ? error.message : "Error adding car. Please try again.")
+      console.error("[v0] Error adding car:", error);
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "Error adding car. Please try again."
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -278,29 +250,41 @@ export function AddCarForm() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Make *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Make *
+              </label>
               <Input
                 value={formData.make}
-                onChange={(e) => setFormData((prev) => ({ ...prev, make: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, make: e.target.value }))
+                }
                 placeholder="Toyota"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Model *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Model *
+              </label>
               <Input
                 value={formData.model}
-                onChange={(e) => setFormData((prev) => ({ ...prev, model: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, model: e.target.value }))
+                }
                 placeholder="Camry"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Year *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Year *
+              </label>
               <Input
                 type="number"
                 value={formData.year}
-                onChange={(e) => setFormData((prev) => ({ ...prev, year: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, year: e.target.value }))
+                }
                 placeholder="2020"
                 min="1990"
                 max={new Date().getFullYear() + 1}
@@ -311,18 +295,29 @@ export function AddCarForm() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Color
+              </label>
               <Input
                 value={formData.color}
-                onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, color: e.target.value }))
+                }
                 placeholder="White"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">License Plate</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                License Plate
+              </label>
               <Input
                 value={formData.license_plate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, license_plate: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    license_plate: e.target.value,
+                  }))
+                }
                 placeholder="ABC123"
               />
             </div>
@@ -338,10 +333,14 @@ export function AddCarForm() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Transmission *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Transmission *
+              </label>
               <Select
                 value={formData.transmission}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, transmission: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, transmission: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select transmission" />
@@ -353,10 +352,14 @@ export function AddCarForm() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Fuel Type *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Fuel Type *
+              </label>
               <Select
                 value={formData.fuel_type}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, fuel_type: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, fuel_type: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select fuel type" />
@@ -373,10 +376,14 @@ export function AddCarForm() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Seats</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Seats
+              </label>
               <Select
                 value={formData.seats}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, seats: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, seats: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -391,10 +398,14 @@ export function AddCarForm() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Doors</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Doors
+              </label>
               <Select
                 value={formData.doors}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, doors: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, doors: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -409,11 +420,15 @@ export function AddCarForm() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mileage</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mileage
+              </label>
               <Input
                 type="number"
                 value={formData.mileage}
-                onChange={(e) => setFormData((prev) => ({ ...prev, mileage: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, mileage: e.target.value }))
+                }
                 placeholder="50000"
               />
             </div>
@@ -433,7 +448,9 @@ export function AddCarForm() {
                 <Checkbox
                   id={feature}
                   checked={formData.features.includes(feature)}
-                  onCheckedChange={(checked) => handleFeatureChange(feature, checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    handleFeatureChange(feature, checked as boolean)
+                  }
                 />
                 <label htmlFor={feature} className="text-sm capitalize">
                   {feature.replace("_", " ")}
@@ -451,21 +468,37 @@ export function AddCarForm() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Upload Photos (Max 10, 5MB each)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Upload Photos (Max 10, 5MB each)
+            </label>
             <div
               className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
-                isDragging ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                isDragging
+                  ? "border-blue-400 bg-blue-50"
+                  : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={handleUploadAreaClick}
             >
-              <Upload className={`h-12 w-12 mx-auto mb-4 ${isDragging ? "text-blue-500" : "text-gray-400"}`} />
-              <p className={`mb-2 ${isDragging ? "text-blue-600 font-medium" : "text-gray-600"}`}>
-                {isDragging ? "Drop files here" : "Click to upload or drag and drop"}
+              <Upload
+                className={`h-12 w-12 mx-auto mb-4 ${
+                  isDragging ? "text-blue-500" : "text-gray-400"
+                }`}
+              />
+              <p
+                className={`mb-2 ${
+                  isDragging ? "text-blue-600 font-medium" : "text-gray-600"
+                }`}
+              >
+                {isDragging
+                  ? "Drop files here"
+                  : "Click to upload or drag and drop"}
               </p>
-              <p className="text-sm text-gray-500 mb-4">PNG, JPG, GIF up to 5MB</p>
+              <p className="text-sm text-gray-500 mb-4">
+                PNG, JPG, GIF up to 5MB
+              </p>
               <input
                 type="file"
                 multiple
@@ -531,22 +564,33 @@ export function AddCarForm() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Location Address *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Location Address *
+            </label>
             <Input
               value={formData.location_address}
-              onChange={(e) => setFormData((prev) => ({ ...prev, location_address: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  location_address: e.target.value,
+                }))
+              }
               placeholder="123 Main St, City, State 12345"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Daily Rate ($) *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Daily Rate ($) *
+            </label>
             <Input
               type="number"
               step="0.01"
               value={formData.daily_rate}
-              onChange={(e) => setFormData((prev) => ({ ...prev, daily_rate: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, daily_rate: e.target.value }))
+              }
               placeholder="50.00"
               required
             />
@@ -561,20 +605,34 @@ export function AddCarForm() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
             <Textarea
               value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               placeholder="Tell renters about your car..."
               rows={4}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">House Rules</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              House Rules
+            </label>
             <Textarea
               value={formData.house_rules}
-              onChange={(e) => setFormData((prev) => ({ ...prev, house_rules: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  house_rules: e.target.value,
+                }))
+              }
               placeholder="No smoking, return with same fuel level, etc."
               rows={3}
             />
@@ -584,7 +642,12 @@ export function AddCarForm() {
 
       {/* Submit */}
       <div className="flex justify-end">
-        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700" size="lg">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700"
+          size="lg"
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -596,5 +659,5 @@ export function AddCarForm() {
         </Button>
       </div>
     </form>
-  )
+  );
 }

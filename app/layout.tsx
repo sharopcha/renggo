@@ -9,7 +9,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://renggo.example"), // <-- your prod URL
+  metadataBase: new URL("https://renggo.com"), // <-- your prod URL
   title: {
     default: "RengGo — Peer-to-Peer Car Rentals in Tallinn",
     template: "%s | RengGo",
