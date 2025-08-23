@@ -159,8 +159,10 @@ export async function signInWithProvider(formData: FormData) {
     }
 
     if (data.url) {
-      redirect(data.url)
+      return { redirectUrl: data.url };
     }
+
+    return { redirectUrl: null };
   } catch (error) {
     console.error("OAuth provider error:", error)
     throw new Error("Authentication service unavailable. Please try again.")

@@ -18,6 +18,7 @@ export function Navigation({ user }: NavigationProps) {
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push("/")
+    // router.replace('/')
   }
 
   return (
