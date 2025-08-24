@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  Car,
   Menu, MessageCircle,
   Calendar,
   ChevronsUpDown, BadgeCheck,
@@ -57,7 +56,7 @@ export function Navigation() {
             {user ? (
               <div className="flex items-center space-x-4">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="cursor-pointer">
+                  <DropdownMenuTrigger className="cursor-pointer focus:outline-none">
                     <div className="flex gap-2 items-center">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
