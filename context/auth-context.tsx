@@ -25,7 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({
   children,
-  redirectTo = "/dashboard",
+  redirectTo = "/account",
   redirectOnSignOut = "/auth/login",
 }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);

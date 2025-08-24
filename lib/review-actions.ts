@@ -86,7 +86,7 @@ export async function submitReview(formData: FormData) {
   }
 
   revalidatePath("/reviews")
-  revalidatePath("/dashboard")
+  revalidatePath("/account")
 }
 
 export async function getReviewStats(userId: string) {

@@ -175,7 +175,7 @@ export function Navigation() {
                     My Bookings
                   </Link>
                   <Link
-                    href="/dashboard"
+                    href="/account"
                     className="text-gray-700  font-medium"
                   >
                     Dashboard

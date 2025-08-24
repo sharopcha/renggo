@@ -227,7 +227,7 @@ export function AddCarForm() {
         }
       }
 
-      router.push("/dashboard?success=car-added");
+      router.push("/account?success=car-added");
     } catch (error) {
       console.error("[v0] Error adding car:", error);
       setUploadError(

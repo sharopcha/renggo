@@ -12,7 +12,7 @@ export default async function SignUpPage() {
 
   // If user is logged in, redirect to dashboard
   if (session) {
-    redirect("/dashboard")
+    redirect("/account")
   }
 
   return (

@@ -23,7 +23,7 @@ export default function AuthCallback() {
 
         if (data.session) {
           // Profile is automatically created by the database trigger when user signs up
-          router.push("/dashboard")
+          router.push("/account")
         } else {
           router.push("/auth/login")
         }
