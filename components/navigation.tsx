@@ -1,25 +1,47 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Car, Menu, User, MessageCircle, Calendar } from "lucide-react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/client"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Car,
+  Menu,
+  User,
+  MessageCircle,
+  Calendar,
+  ChevronsUpDown,
+  Sparkles,
+  BadgeCheck,
+  CreditCard,
+  Bell,
+  LogOut,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/context/auth-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { SidebarMenuButton } from "./ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-interface NavigationProps {
-  user?: any
-}
-
-export function Navigation({ user }: NavigationProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const router = useRouter()
+export function Navigation() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const { user, userProfile } = useAuth();
+  const isMobile = useIsMobile();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/")
-    // router.replace('/')
-  }
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -33,27 +55,86 @@ export function Navigation({ user }: NavigationProps) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/search" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link href="/search" className="text-gray-700  font-medium">
               Find Cars
             </Link>
-            <Link href="/become-host" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link href="/become-host" className="text-gray-700  font-medium">
               Become a Host
             </Link>
 
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link href="/messages" className="text-gray-700 hover:text-blue-600">
-                  <MessageCircle className="h-5 w-5" />
-                </Link>
-                <Link href="/bookings" className="text-gray-700 hover:text-blue-600">
-                  <Calendar className="h-5 w-5" />
-                </Link>
-                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600">
-                  <User className="h-5 w-5" />
-                </Link>
-                <Button onClick={handleSignOut} variant="outline" size="sm">
-                  Sign Out
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="cursor-pointer">
+                    <div className="flex gap-2 items-center">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={userProfile?.profile_image_url!}
+                          alt={userProfile?.full_name!}
+                        />
+                        <AvatarFallback className="rounded-lg">
+                          CN
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm">
+                        <span className="truncate font-medium">
+                          {userProfile?.full_name}
+                        </span>
+                        <span className="truncate text-xs">
+                          {userProfile?.email}
+                        </span>
+                      </div>
+                      <ChevronsUpDown className="ml-auto size-4" />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                    side="bottom"
+                    align="end"
+                    sideOffset={4}
+                  >
+                    <DropdownMenuLabel className="p-0 font-normal">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-medium">
+                            {userProfile?.full_name}
+                          </span>
+                          <span className="truncate text-xs">
+                            {userProfile?.email}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={() => router.push("/account")}>
+                        <BadgeCheck />
+                        Account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/billing")}>
+                        <CreditCard />
+                        Billing
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/notifications")}>
+                        <Bell />
+                        Notifications
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/bookings")}>
+                        <Calendar />
+                        Bookings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/messages")}>
+                        <MessageCircle />
+                        Messages
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <div className="flex items-center space-x-3">
@@ -73,7 +154,11 @@ export function Navigation({ user }: NavigationProps) {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
@@ -83,25 +168,33 @@ export function Navigation({ user }: NavigationProps) {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-3">
-              <Link href="/search" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link href="/search" className="text-gray-700  font-medium">
                 Find Cars
               </Link>
-              <Link href="/become-host" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link href="/become-host" className="text-gray-700  font-medium">
                 Become a Host
               </Link>
 
               {user ? (
                 <>
-                  <Link href="/messages" className="text-gray-700 hover:text-blue-600 font-medium">
+                  <Link href="/messages" className="text-gray-700  font-medium">
                     Messages
                   </Link>
-                  <Link href="/bookings" className="text-gray-700 hover:text-blue-600 font-medium">
+                  <Link href="/bookings" className="text-gray-700  font-medium">
                     My Bookings
                   </Link>
-                  <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">
+                  <Link
+                    href="/dashboard"
+                    className="text-gray-700  font-medium"
+                  >
                     Dashboard
                   </Link>
-                  <Button onClick={handleSignOut} variant="outline" size="sm" className="w-fit bg-transparent">
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    size="sm"
+                    className="w-fit bg-transparent"
+                  >
                     Sign Out
                   </Button>
                 </>
@@ -124,5 +217,5 @@ export function Navigation({ user }: NavigationProps) {
         )}
       </div>
     </nav>
-  )
+  );
 }

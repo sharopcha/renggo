@@ -40,7 +40,7 @@ export function AuthProvider({
         .from("profiles") // Adjust table name as needed
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -72,8 +72,27 @@ export function AuthProvider({
 
         if (session?.user) {
           setUser(session.user);
-          const profile = await fetchUserProfile(session.user.id);
-          setUserProfile(profile);
+          let profile = await fetchUserProfile(session.user.id);
+          
+          if(!profile) {
+            const { data, error } = await supabase.from('profiles').insert({
+              email: session.user.email || '',
+              id: session.user.id || '',
+              full_name: session.user.user_metadata.full_name || '',
+              profile_image_url: session.user.user_metadata.avatar_url || '',
+              phone: session.user.user_metadata.phone || '',
+              date_of_birth: session.user.user_metadata.date_of_birth,
+            }).single()
+
+            if (error) {
+              console.error("Error creating profile:", error);
+            }
+
+            setUserProfile(data);
+          } else {
+            setUserProfile(profile);
+          }
+
         }
       } catch (error) {
         console.error("Auth initialization error:", error);

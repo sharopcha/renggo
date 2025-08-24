@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 
-export default async function AuthCallback() {
+export default function AuthCallback() {
   const router = useRouter()
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
         const { data, error } = await supabase.auth.getSession()
+
+        console.log({ data, error })
 
         if (error) {
           console.error("Auth callback error:", error)

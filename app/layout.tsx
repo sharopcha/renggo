@@ -4,10 +4,9 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
-import { revalidatePath } from "next/cache";
+import { AuthProvider } from "@/context/auth-context";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://renggo.com"), // <-- your prod URL
@@ -50,9 +49,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
   return (
     <html lang="en" className="light" style={{ colorScheme: "light" }}>
       <head>
@@ -71,9 +67,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navigation user={user} />
-          {children}
-          <Toaster />
+          <AuthProvider>
+            <Navigation />
+            {children}
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
