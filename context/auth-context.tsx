@@ -11,6 +11,8 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
+
+  setUserProfile: (profile: UserProfile | null) => void;
 }
 
 interface AuthProviderProps {
@@ -137,6 +139,8 @@ export function AuthProvider({
     user,
     userProfile,
     loading,
+
+    setUserProfile
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

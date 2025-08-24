@@ -41,7 +41,7 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 h-full py-4">
-            <img src='./logo.png' className="h-full"></img>
+            <img src='/logo.png' className="h-full"></img>
           </Link>
 
           {/* Desktop Navigation */}
