@@ -25,7 +25,7 @@ export default async function HomePage() {
     <div className="min-h-screen">
       <HeroSection />
       <SearchBar />
-      <FeaturedCars cars={(featuredCars as any) || []} />
+      {/* <FeaturedCars cars={(featuredCars as any) || []} /> */}
       <HowItWorks />
     </div>
   );
