@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { Loader2, Upload, X, AlertCircle } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 const CAR_FEATURES = [
   "bluetooth",
@@ -35,8 +36,11 @@ const CAR_FEATURES = [
   "automatic_transmission",
 ];
 
+const USE_PUBLIC_IMAGES = true;
+
 export function AddCarForm() {
   const router = useRouter();
+  const { userProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -144,97 +148,208 @@ export function AddCarForm() {
     setUploadError(null);
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setUploadError(null);
+
+  //   try {
+  //     const {
+  //       data: { user },
+  //     } = await supabase.auth.getUser();
+
+  //     if (!user) throw new Error("Not authenticated");
+
+  //     const { data: car, error: carError } = await supabase
+  //       .from("cars")
+  //       .insert({
+  //         host_id: user.id,
+  //         make: formData.make,
+  //         model: formData.model,
+  //         year: Number.parseInt(formData.year),
+  //         color: formData.color,
+  //         license_plate: formData.license_plate,
+  //         transmission: formData.transmission,
+  //         fuel_type: formData.fuel_type,
+  //         seats: Number.parseInt(formData.seats),
+  //         doors: Number.parseInt(formData.doors),
+  //         description: formData.description,
+  //         daily_rate: Number.parseFloat(formData.daily_rate),
+  //         location_address: formData.location_address,
+  //         mileage: formData.mileage ? Number.parseInt(formData.mileage) : null,
+  //         house_rules: formData.house_rules,
+  //         features: formData.features,
+  //       })
+  //       .select()
+  //       .single();
+
+  //     if (carError) {
+  //       console.error("[v0] Car creation error:", carError);
+  //       throw carError;
+  //     }
+
+  //     if (photos.length > 0) {
+  //       for (let i = 0; i < photos.length; i++) {
+  //         const photo = photos[i];
+  //         const fileExt = photo.name.split(".").pop();
+  //         const fileName = `${user.id}/${car.id}/${Date.now()}-${i}.${fileExt}`;
+
+  //         console.log("[v0] Uploading photo", i + 1, ":", fileName);
+
+  //         const { data: uploadData, error: uploadError } =
+  //           await supabase.storage.from("car-photos").upload(fileName, photo, {
+  //             cacheControl: "3600",
+  //             upsert: false,
+  //           });
+
+  //         if (uploadError) {
+  //           console.error("[v0] Photo upload error:", uploadError);
+  //           setUploadError(
+  //             `Failed to upload photo ${i + 1}: ${uploadError.message}`
+  //           );
+  //           continue;
+  //         }
+
+  //         const {
+  //           data: { publicUrl },
+  //         } = supabase.storage.from("car-photos").getPublicUrl(fileName);
+
+  //         const { error: photoRecordError } = await supabase
+  //           .from("car_photos")
+  //           .insert({
+  //             car_id: car.id,
+  //             photo_url: publicUrl,
+  //             is_primary: i === 0,
+  //             display_order: i,
+  //           });
+
+  //         if (photoRecordError) {
+  //           console.error("[v0] Photo record error:", photoRecordError);
+  //         } else {
+  //           console.log("[v0] Photo record saved successfully");
+  //         }
+  //       }
+  //     }
+
+  //     router.push("/account?success=car-added");
+  //   } catch (error) {
+  //     console.error("[v0] Error adding car:", error);
+  //     setUploadError(
+  //       error instanceof Error
+  //         ? error.message
+  //         : "Error adding car. Please try again."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setUploadError(null);
 
+    let newCarId: string | null = null;
+    let uploadedPaths: string[] = [];
+
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      if(!userProfile?.id) return;
 
-      if (!user) throw new Error("Not authenticated");
-
+      // 1) Insert car
       const { data: car, error: carError } = await supabase
         .from("cars")
         .insert({
-          host_id: user.id,
+          host_id: userProfile.id,
           make: formData.make,
           model: formData.model,
-          year: Number.parseInt(formData.year),
-          color: formData.color,
-          license_plate: formData.license_plate,
+          year: Number(formData.year),
+          color: formData.color || null,
+          license_plate: formData.license_plate || null,
           transmission: formData.transmission,
           fuel_type: formData.fuel_type,
-          seats: Number.parseInt(formData.seats),
-          doors: Number.parseInt(formData.doors),
-          description: formData.description,
-          daily_rate: Number.parseFloat(formData.daily_rate),
+          seats: Number(formData.seats),
+          doors: Number(formData.doors),
+          description: formData.description || null,
+          daily_rate: Number(formData.daily_rate),
           location_address: formData.location_address,
-          mileage: formData.mileage ? Number.parseInt(formData.mileage) : null,
-          house_rules: formData.house_rules,
+          mileage: formData.mileage ? Number(formData.mileage) : null,
+          house_rules: formData.house_rules || null,
           features: formData.features,
         })
         .select()
         .single();
 
-      if (carError) {
-        console.error("[v0] Car creation error:", carError);
-        throw carError;
-      }
+      if (carError) throw carError;
+      newCarId = car.id as string;
 
+      // 2) Upload photos (if any) in parallel
       if (photos.length > 0) {
-        for (let i = 0; i < photos.length; i++) {
-          const photo = photos[i];
-          const fileExt = photo.name.split(".").pop();
-          const fileName = `${user.id}/${car.id}/${Date.now()}-${i}.${fileExt}`;
-
-          console.log("[v0] Uploading photo", i + 1, ":", fileName);
-
-          const { data: uploadData, error: uploadError } =
-            await supabase.storage.from("car-photos").upload(fileName, photo, {
-              cacheControl: "3600",
-              upsert: false,
+        const uploadJobs = photos.map((photo, i) => {
+          const ext = photo.name.split(".").pop() || "jpg";
+          const path = `${userProfile.id}/${newCarId}/${Date.now()}-${i}.${ext}`;
+          return supabase.storage
+            .from("car-photos")
+            .upload(path, photo, { cacheControl: "3600", upsert: false })
+            .then(({ data, error }) => {
+              if (error) throw new Error(error.message);
+              uploadedPaths.push(path);
+              return { path, index: i };
             });
+        });
 
-          if (uploadError) {
-            console.error("[v0] Photo upload error:", uploadError);
-            setUploadError(
-              `Failed to upload photo ${i + 1}: ${uploadError.message}`
-            );
-            continue;
-          }
+        const results = await Promise.allSettled(uploadJobs);
+        const successes = results
+          .filter((r): r is PromiseFulfilledResult<{ path: string; index: number }> => r.status === "fulfilled")
+          .map((r) => r.value);
 
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("car-photos").getPublicUrl(fileName);
-
-          const { error: photoRecordError } = await supabase
-            .from("car_photos")
-            .insert({
-              car_id: car.id,
-              photo_url: publicUrl,
-              is_primary: i === 0,
-              display_order: i,
-            });
-
-          if (photoRecordError) {
-            console.error("[v0] Photo record error:", photoRecordError);
-          } else {
-            console.log("[v0] Photo record saved successfully");
-          }
+        if (successes.length === 0) {
+          throw new Error("Failed to upload all images");
         }
+
+        // 3) Turn paths into URLs and create DB rows
+        const photoRows = await Promise.all(
+          successes.map(async ({ path, index }) => {
+            const url = USE_PUBLIC_IMAGES
+              ? supabase.storage.from("car-photos").getPublicUrl(path).data.publicUrl
+              : (await supabase.storage.from("car-photos").createSignedUrl(path, 60 * 60)).data?.signedUrl;
+
+            if (!url) throw new Error("Could not get image URL");
+            return {
+              car_id: newCarId!,
+              photo_url: url,
+              is_primary: index === 0,
+              display_order: index,
+            };
+          })
+        );
+
+        const { error: photosInsertError } = await supabase
+          .from("car_photos")
+          .insert(photoRows);
+
+        if (photosInsertError) throw photosInsertError;
       }
 
+      // 4) Done → navigate
       router.push("/account?success=car-added");
-    } catch (error) {
-      console.error("[v0] Error adding car:", error);
-      setUploadError(
-        error instanceof Error
-          ? error.message
-          : "Error adding car. Please try again."
-      );
+      router.refresh?.(); // App Router: revalidate server data
+    } catch (err) {
+      console.error("[AddCar] error:", err);
+      setUploadError(err instanceof Error ? err.message : "Error adding car");
+
+      // Best-effort cleanup if something failed
+      try {
+        // delete uploaded storage files
+        if (uploadedPaths.length > 0) {
+          await supabase.storage.from("car-photos").remove(uploadedPaths);
+        }
+        // delete car row if we created one
+        if (newCarId) {
+          await supabase.from("cars").delete().eq("id", newCarId);
+        }
+      } catch (cleanupErr) {
+        console.warn("Cleanup error:", cleanupErr);
+      }
     } finally {
       setLoading(false);
     }

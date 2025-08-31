@@ -10,7 +10,7 @@ import {
   Bell,
   LogOut
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/context/auth-context";
@@ -27,12 +27,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [namePrefix, setNamePrefix] = useState<string>('');
   const router = useRouter();
   const { user, userProfile } = useAuth();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/");
+  };
+
+  useEffect(() => {
+    if (userProfile) {
+      setProfileImage(userProfile.profile_image_url);
+      setNamePrefix(userProfile.full_name ? getNamePrefix(userProfile.full_name) : '');
+    }
+  }, [userProfile])
+
+  const getNamePrefix = (fullName: string) => {
+    const prefixes = fullName.split(" ")?.map((n) => n[0]).join("").toUpperCase();
+    return prefixes;
   };
 
   return (
@@ -60,7 +74,7 @@ export function Navigation() {
                     <div className="flex gap-2 items-center">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={userProfile?.profile_image_url!}
+                          src={profileImage!}
                           alt={userProfile?.full_name!}
                         />
                         <AvatarFallback className="rounded-lg">

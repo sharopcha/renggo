@@ -32,6 +32,8 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { format, isSameYear, Locale } from "date-fns";
+import { useRouter } from "next/navigation";
+import { Listings } from "./components/listings";
 
 function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -43,6 +45,7 @@ function ProfilePage() {
     location: "",
   });
   const { userProfile, setUserProfile } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setUserInfo({
@@ -99,26 +102,6 @@ function ProfilePage() {
     },
   ];
 
-  const myListings = [
-    {
-      id: 1,
-      name: "2023 Tesla Model 3",
-      image: "/white-tesla-model-3.png",
-      price: "$80/day",
-      rating: 4.9,
-      trips: 23,
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "2022 BMW X5",
-      image: "/black-bmw-x5-suv.png",
-      price: "$120/day",
-      rating: 4.7,
-      trips: 18,
-      status: "active",
-    },
-  ];
 
   const handleSave = async () => {
     setIsEditing(true);
@@ -456,66 +439,7 @@ function ProfilePage() {
 
           {/* My Cars Tab */}
           <TabsContent value="listings">
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold">My Cars</h2>
-                  <p className="text-muted-foreground">
-                    Manage your vehicle listings
-                  </p>
-                </div>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add New Car
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myListings.map((car) => (
-                  <Card key={car.id}>
-                    <CardContent className="p-0">
-                      <img
-                        src={car.image || "/placeholder.svg"}
-                        alt={car.name}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold">{car.name}</h3>
-                          {getStatusBadge(car.status)}
-                        </div>
-                        <p className="text-2xl font-bold text-primary mb-2">
-                          {car.price}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            <span>{car.rating}</span>
-                          </div>
-                          <span>{car.trips} trips</span>
-                        </div>
-                        <div className="flex gap-2 mt-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 bg-transparent"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 bg-transparent"
-                          >
-                            View
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+            <Listings />
           </TabsContent>
 
           {/* Trip History Tab */}
