@@ -27,7 +27,7 @@ export function CarDetails({ car, reviews }: CarDetailsProps) {
   return (
     <div className="space-y-6">
       {/* Photo Gallery */}
-      <Card>
+      <Card >
         <CardContent className="p-0">
           <div className="relative h-96 w-full">
             <Image

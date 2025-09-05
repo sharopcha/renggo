@@ -4,14 +4,12 @@ import { CarDetails } from "@/components/cars/car-details"
 import { BookingCard } from "@/components/cars/booking-card"
 
 interface CarPageProps {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>;
 }
 
 export default async function CarPage({ params }: CarPageProps) {
   const supabase = await createClient()
-
+  const { id } = await params;
   // Get car details with photos and host info
   const { data: car } = await supabase
     .from("cars")
@@ -20,7 +18,7 @@ export default async function CarPage({ params }: CarPageProps) {
       car_photos(photo_url, is_primary, display_order),
       profiles(full_name, profile_image_url, created_at)
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("is_active", true)
     .single()
 
@@ -35,7 +33,7 @@ export default async function CarPage({ params }: CarPageProps) {
       *,
       profiles(full_name, profile_image_url)
     `)
-    .eq("reviewee_id", car.host_id)
+    .eq("reviewee_id", car.host_id!)
     .eq("review_type", "renter_to_host")
     .order("created_at", { ascending: false })
     .limit(5)
@@ -53,7 +51,7 @@ export default async function CarPage({ params }: CarPageProps) {
             <CarDetails car={car} reviews={reviews || []} />
           </div>
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
+            <div className="sticky top-18">
               <BookingCard car={car} user={user} />
             </div>
           </div>
