@@ -9,40 +9,60 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/auth-context";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://renggo.com"), // <-- your prod URL
-  title: {
-    default: "RengGo — Peer-to-Peer Car Rentals in Tallinn",
-    template: "%s | RengGo",
-  },
+  title: "Renggo - Coming Soon | Back Office, Simplified",
   description:
-    "Rent cars from locals in Tallinn. Book by the hour or day, insurance included, instant pickup. RengGo makes car sharing simple.",
-  keywords: [
-    "car rental",
-    "peer to peer",
-    "car sharing",
-    "Tallinn",
-    "EVIA",
-    "rent a car",
-    "electric cars",
-  ],
+    "Join the waitlist for Renggo - the comprehensive back office solution that simplifies fleet management, analytics, and operations. Get early access to clear fleet analytics, simple payouts & pricing, and smooth maintenance & claims.",
+  generator: "v0.app",
+  applicationName: "Renggo",
+  referrer: "origin-when-cross-origin",
+  keywords: ["fleet management", "back office", "analytics", "payouts", "maintenance", "claims", "business software"],
+  authors: [{ name: "Renggo Team" }],
+  creator: "Renggo",
+  publisher: "Renggo",
+  icons: {
+    icon: [
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }]
+  },
+  manifest: '/site.webmanifest',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://renggo.com"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
-    url: "/",
-    siteName: "EVIA",
-    title: "EVIA — Peer-to-Peer Car Rentals in Tallinn",
-    description: "Book local cars with insurance included and instant pickup.",
     locale: "en_US",
+    url: "/",
+    title: "Renggo - Coming Soon | Back Office, Simplified",
+    description:
+      "Join the waitlist for Renggo - the comprehensive back office solution that simplifies fleet management, analytics, and operations.",
+    siteName: "Renggo",
+    images: [
+      {
+        url: "/renggo-g-letter.png",
+        width: 1992,
+        height: 2641,
+        alt: "Renggo - Back Office, Simplified",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "RengGo — Peer-to-Peer Car Rentals in Tallinn",
-    description: "Book local cars with insurance included and instant pickup.",
+    title: "Renggo - Coming Soon | Back Office, Simplified",
+    description:
+      "Join the waitlist for Renggo - the comprehensive back office solution that simplifies fleet management, analytics, and operations.",
+    images: ["/renggo-g-letter.png"],
+    creator: "@renggo",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+}
 
 export default async function RootLayout({
   children,
@@ -67,11 +87,12 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
+          {/* <AuthProvider>
             <Navigation />
             {children}
             <Toaster />
-          </AuthProvider>
+          </AuthProvider> */}
+          {children}
         </ThemeProvider>
       </body>
     </html>
