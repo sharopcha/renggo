@@ -2,11 +2,8 @@ import type React from "react";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import "./globals.css";
-import { Navigation } from "@/components/navigation";
+import "../styles/globals.css";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "@/context/auth-context";
 
 export const metadata: Metadata = {
   title: "Renggo - Coming Soon | Back Office, Simplified",
@@ -87,11 +84,6 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <AuthProvider>
-            <Navigation />
-            {children}
-            <Toaster />
-          </AuthProvider> */}
           {children}
         </ThemeProvider>
       </body>
