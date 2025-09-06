@@ -139,7 +139,7 @@ export function WaitlistForm() {
               required
             />
           </div>
-          <Button type="submit" disabled={state.isSubmitting} className="h-12 px-8 min-w-[140px] bg-[]">
+          <Button type="submit" disabled={state.isSubmitting} className="h-12 px-8 min-w-[140px] bg-primary">
             {state.isSubmitting ? getMessage("loading") : getMessage("joinWaitlist")}
           </Button>
         </div>
