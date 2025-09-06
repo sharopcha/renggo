@@ -8,7 +8,7 @@ export function Hero() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center space-y-8">
           <div className="space-y-4">
-            <div className="flex flex-col md:flex-row justify-center gap-4 just">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 just">
             <img src='/logo.png' className="h-[60px]"></img>
             <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold text-balance">
               {getMessage("headline")}
