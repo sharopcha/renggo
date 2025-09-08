@@ -1,15 +1,16 @@
 import { EditRentalContent } from "@/components/rentals/edit-rental-content";
 
 interface EditRentalPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default function EditRentalPage({ params }: EditRentalPageProps) {
+export default async function EditRentalPage({ params }: EditRentalPageProps) {
+
+  const { id } = await params;
+
   return (
     <main className="flex-1 overflow-y-auto">
-      <EditRentalContent rentalId={params.id} />
+      <EditRentalContent rentalId={id} />
     </main>
   );
 }

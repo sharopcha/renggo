@@ -1,15 +1,15 @@
 import { RentalDetailsContent } from "@/components/rentals/rental-details-content";
 
 interface RentalDetailsPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default function RentalDetailsPage({ params }: RentalDetailsPageProps) {
+export default async function RentalDetailsPage({ params }: RentalDetailsPageProps) {
+  const { id } = await params;
+
   return (
     <main className="flex-1 overflow-auto">
-      <RentalDetailsContent rentalId={params.id} />
+      <RentalDetailsContent rentalId={id} />
     </main>
   );
 }
