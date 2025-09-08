@@ -34,17 +34,17 @@ import {
 } from "@/components/ui/sidebar";
 
 const navigation = [
-  { name: "Dashboard", url: "/", icon: LayoutDashboard },
-  { name: "Rentals", url: "/rentals", icon: Calendar },
-  { name: "Vehicles", url: "/vehicles", icon: Car },
-  { name: "Customers", url: "/customers", icon: Users },
-  { name: "Payments & Payouts", url: "/payments", icon: CreditCard },
-  { name: "Maintenance", url: "/maintenance", icon: Wrench },
-  { name: "Insurance & Claims", url: "/claims", icon: Shield },
-  { name: "Pricing & Discounts", url: "/pricing", icon: Tag },
-  { name: "Disputes", url: "/disputes", icon: MessageSquare },
-  { name: "Reports", url: "/reports", icon: BarChart3 },
-  { name: "Settings", url: "/settings", icon: Settings },
+  { name: "Dashboard", url: "/backoffice", icon: LayoutDashboard },
+  { name: "Rentals", url: "/backoffice/rentals", icon: Calendar },
+  { name: "Vehicles", url: "/backoffice/vehicles", icon: Car },
+  { name: "Customers", url: "/backoffice/customers", icon: Users },
+  { name: "Payments & Payouts", url: "/backoffice/payments", icon: CreditCard },
+  { name: "Maintenance", url: "/backoffice/maintenance", icon: Wrench },
+  { name: "Insurance & Claims", url: "/backoffice/claims", icon: Shield },
+  { name: "Pricing & Discounts", url: "/backoffice/pricing", icon: Tag },
+  { name: "Disputes", url: "/backoffice/disputes", icon: MessageSquare },
+  { name: "Reports", url: "/backoffice/reports", icon: BarChart3 },
+  { name: "Settings", url: "/backoffice/settings", icon: Settings },
 ]
 
 export function NavProjects() {
