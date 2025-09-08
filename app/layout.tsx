@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "../styles/globals.css";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Renggo - Coming Soon | Back Office, Simplified",
@@ -12,25 +13,35 @@ export const metadata: Metadata = {
   generator: "v0.app",
   applicationName: "Renggo",
   referrer: "origin-when-cross-origin",
-  keywords: ["fleet management", "back office", "analytics", "payouts", "maintenance", "claims", "business software"],
+  keywords: [
+    "fleet management",
+    "back office",
+    "analytics",
+    "payouts",
+    "maintenance",
+    "claims",
+    "business software",
+  ],
   authors: [{ name: "Renggo Team" }],
   creator: "Renggo",
   publisher: "Renggo",
   icons: {
     icon: [
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon.ico' },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.ico" },
     ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }]
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
-  manifest: '/site.webmanifest',
+  manifest: "/site.webmanifest",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://renggo.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://renggo.com"
+  ),
   alternates: {
     canonical: "/",
   },
@@ -59,7 +70,7 @@ export const metadata: Metadata = {
     images: ["/renggo-g-letter.png"],
     creator: "@renggo",
   },
-}
+};
 
 export default async function RootLayout({
   children,
@@ -85,6 +96,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
