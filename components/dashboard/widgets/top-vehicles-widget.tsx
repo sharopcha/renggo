@@ -62,7 +62,7 @@ export function TopVehiclesWidget() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {topVehicles.map((vehicle, index) => (
+          {topVehicles.map((vehicle) => (
             <div key={vehicle.id} className="flex items-center space-x-3">
               <div className="relative h-10 w-16 rounded-md overflow-hidden bg-muted">
                 <Image src={vehicle.image || "/placeholder.svg"} alt={vehicle.model} fill className="object-cover" />

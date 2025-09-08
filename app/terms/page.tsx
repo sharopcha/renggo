@@ -137,7 +137,7 @@ export default function TermsPage() {
             <h2 className="text-2xl font-semibold mb-4">Changes to Terms</h2>
             <p className="text-muted-foreground leading-relaxed">
               We reserve the right to modify these terms at any time. We will notify users of material changes by
-              posting the updated terms on this page and updating the "Last updated" date. Continued use of our services
+              posting the updated terms on this page and updating the &quot;Last updated&quot; date. Continued use of our services
               after changes constitutes acceptance of the new terms.
             </p>
           </section>

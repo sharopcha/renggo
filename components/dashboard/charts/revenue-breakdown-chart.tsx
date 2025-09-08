@@ -137,7 +137,7 @@ export function RevenueBreakdownChart() {
                 },
               },
             }}
-            tooltip={({ id, value, color }) => (
+            tooltip={({ id, value }) => (
               <div
                 style={{
                   background: "hsl(var(--card))",

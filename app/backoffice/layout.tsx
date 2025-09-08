@@ -21,7 +21,7 @@ export default function BackofficeLayout({
     getUser();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (event) => {
         if (event === "SIGNED_OUT") {
           router.push("/auth/login");
         }
@@ -31,7 +31,7 @@ export default function BackofficeLayout({
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, router]);
 
   return <Suspense fallback={null}>{children}</Suspense>;
 }
