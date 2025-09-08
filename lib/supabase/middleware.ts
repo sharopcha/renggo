@@ -48,7 +48,10 @@ export async function updateSession(request: NextRequest) {
 
     !request.nextUrl.pathname.startsWith('/_next') &&
     !request.nextUrl.pathname.startsWith('/favicon.ico') &&
-    !request.nextUrl.pathname.startsWith('/robots.txt')
+    !request.nextUrl.pathname.startsWith('/robots.txt') &&
+    !/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map|txt|xml|woff|woff2)$/.test(
+      request.nextUrl.pathname
+    )
   ) {
     
     if(request.nextUrl.pathname.startsWith('/backoffice')) {

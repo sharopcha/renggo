@@ -7,6 +7,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    remotePatterns: [{ protocol: 'https', hostname: 'renggo.com' }],
     unoptimized: true,
   },
 }

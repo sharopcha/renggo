@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import "../styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Renggo - Coming Soon | Back Office, Simplified",
@@ -89,15 +90,17 @@ export default async function RootLayout({
         `}</style>
       </head>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <Suspense fallback={null}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );

@@ -1,20 +1,17 @@
-'use client';
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { DashboardContent } from "@/components/dashboard/dashboard-content";
+import { Header } from "@/components/layout/header";
+import { Sidebar } from "@/components/layout/sidebar";
 
 export default function Backoffice() {
-  
-  const onLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-  }
-
   return (
-    <>
-      <div>Backoffice</div>
-      <Button variant="ghost" onClick={() => onLogout()}>
-        Logout
-      </Button>
-    </>
+    <div className="flex h-screen bg-background">
+      <Sidebar />
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-auto">
+          <DashboardContent />
+        </main>
+      </div>
+    </div>
   );
 }
