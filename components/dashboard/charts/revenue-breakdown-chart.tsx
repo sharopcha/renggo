@@ -21,7 +21,7 @@ export function RevenueBreakdownChart() {
       </CardHeader>
       <CardContent>
         <div style={{ height: 300 }}>
-          <ResponsiveBar
+          {/* <ResponsiveBar
             data={revenueData}
             keys={["baseFare", "fees", "extras", "discounts"]}
             indexBy="month"
@@ -151,7 +151,7 @@ export function RevenueBreakdownChart() {
                 <strong>{id}</strong>: €{value}
               </div>
             )}
-          />
+          /> */}
         </div>
       </CardContent>
     </Card>

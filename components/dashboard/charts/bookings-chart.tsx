@@ -37,7 +37,7 @@ export function BookingsChart() {
       </CardHeader>
       <CardContent>
         <div style={{ height: 300 }}>
-          <ResponsiveLine
+          {/* <ResponsiveLine
             data={nivoData}
             margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
             xScale={{ type: "point" }}
@@ -118,7 +118,7 @@ export function BookingsChart() {
                 },
               },
             }}
-          />
+          /> */}
         </div>
       </CardContent>
     </Card>

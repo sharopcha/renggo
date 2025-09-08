@@ -1,8 +1,4 @@
-import { DashboardContent } from "@/components/dashboard/dashboard-content";
-import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
-
-import { AppSidebar } from "@/components/layout/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,26 +6,16 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar"
 
-export default function Backoffice() {
+export default function Page() {
   return (
-    // <div className="flex h-screen bg-background">
-    //   <Sidebar />
-    //   <div className="flex flex-1 flex-col overflow-hidden">
-    //     <Header />
-    //     <main className="flex-1 overflow-auto">
-    //       <DashboardContent />
-    //     </main>
-    //   </div>
-    // </div>
-
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -55,10 +41,15 @@ export default function Backoffice() {
             </Breadcrumb>
           </div>
         </header>
-        <main className="flex-1 overflow-auto">
-          <DashboardContent />
-        </main>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+          </div>
+          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+        </div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }
