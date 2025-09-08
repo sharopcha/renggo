@@ -41,11 +41,24 @@ export async function updateSession(request: NextRequest) {
     !user &&
     !request.nextUrl.pathname.startsWith('/auth/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/error')
+    !request.nextUrl.pathname.startsWith('/error') &&
+    !request.nextUrl.pathname.startsWith('/coming-soon') &&
+    !request.nextUrl.pathname.startsWith('/privacy') &&
+    !request.nextUrl.pathname.startsWith('/terms') &&
+
+    !request.nextUrl.pathname.startsWith('/_next') &&
+    !request.nextUrl.pathname.startsWith('/favicon.ico') &&
+    !request.nextUrl.pathname.startsWith('/robots.txt')
   ) {
-    // no user, potentially respond by redirecting the user to the login page
+    
+    if(request.nextUrl.pathname.startsWith('/backoffice')) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/auth/login'
+      return NextResponse.redirect(url)
+    }
+
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = '/coming-soon'
     return NextResponse.redirect(url)
   }
 
