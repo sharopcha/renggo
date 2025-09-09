@@ -61,7 +61,7 @@ export function SidebarMenuItems() {
                 tooltip={item.name}
                 className={cn(
                   active && "bg-primary text-primary-foreground",
-                  "hover:bg-gray-200 py-4 px-3"
+                  "hover:bg-gray-200 py-4.5 px-3"
                 )}
               >
                 <a href={item.url}>
