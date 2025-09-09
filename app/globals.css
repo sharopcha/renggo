@@ -13,7 +13,7 @@
   /* Updated primary color and foreground for better contrast */
   --primary: #06b6d4;
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(87.1% .008 286.29);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -40,6 +40,10 @@
   --sidebar-ring: oklch(0.708 0 0);
   /* Updated Renggo brand color for better contrast */
   --renggo-turquoise: oklch(0.65 0.131 198.6);
+  
+  --header-height: calc(var(--spacing) * 14);
+  --sidebar-width-icon: 3rem;
+  --sidebar-width: calc(var(--spacing) * 64);
 }
 
 .dark {
