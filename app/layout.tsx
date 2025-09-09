@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
 import "./globals.css";
+import Loader from "@/components/layout/loader";
 
 export const metadata: Metadata = {
   title: "Renggo - Coming Soon | Back Office, Simplified",
@@ -90,7 +91,7 @@ export default async function RootLayout({
         `}</style>
       </head>
       <body>
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loader />}>
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
