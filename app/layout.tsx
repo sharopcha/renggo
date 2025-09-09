@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { Suspense } from "react";
 import "./globals.css";
 import Loader from "@/components/layout/loader";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Renggo - Coming Soon | Back Office, Simplified",
@@ -98,7 +99,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <NextIntlClientProvider>{children}</NextIntlClientProvider>
             <Toaster />
           </ThemeProvider>
         </Suspense>

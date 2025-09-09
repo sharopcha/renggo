@@ -11,9 +11,11 @@ import { UtilizationHeatmap } from "./charts/utilization-heatmap"
 import { TopVehiclesWidget } from "./widgets/top-vehicles-widget"
 import { RecentActivityWidget } from "./widgets/recent-activity-widget"
 import { UpcomingMaintenanceWidget } from "./widgets/upcoming-maintenance-widget"
+import { useTranslations } from "next-intl"
 
 export function DashboardContent() {
-  const kpis = calculateKPIs()
+  const kpis = calculateKPIs();
+  const t = useTranslations();
 
   const kpiCards = [
     {
@@ -71,7 +73,7 @@ export function DashboardContent() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('pageTitles.dashboard')}</h1>
           <p className="text-muted-foreground">Welcome back! Here`&apos;s what`&apos;s happening with your fleet.</p>
         </div>
         <div className="flex items-center space-x-2">
