@@ -1,3 +1,4 @@
+'use client';
 import { Hero } from "@/components/hero";
 import { ValueProps } from "@/components/value-props";
 import { FAQ } from "@/components/faq";
