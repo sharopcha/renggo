@@ -44,6 +44,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
     {
       id: "photoUrl",
       accessorKey: "photoUrl",
+      enableGlobalFilter: true,
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Vehicle" />
       ),
@@ -64,11 +65,13 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
     {
       id: "plate",
       accessorKey: "plate",
+      enableGlobalFilter: true,
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Plate" />
       ),
       cell: ({ row }) => <div>{row.getValue("plate")}</div>,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      enableSorting: true
     },
     {
       id: "modelYear",
