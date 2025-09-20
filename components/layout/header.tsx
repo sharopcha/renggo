@@ -40,12 +40,46 @@ export function Header() {
   const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
   const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
   const [showPanel, setShowPanel] = useState<Checked>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
 
   const supabase = createClient();
   const { profile } = useSupabase();
 
-  const onLogout = async () => {
-    await supabase.auth.signOut();
+   const onLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple logout attempts
+    
+    try {
+      setIsLoggingOut(true);
+      
+      // Clear all possible auth-related data
+      await supabase.auth.signOut({ 
+        scope: 'global' // This ensures logout across all sessions
+      });
+      
+      // Force clear any cached data
+      await supabase.auth.refreshSession();
+      
+      // Clear any local storage data if you're using it
+      if (typeof window !== 'undefined') {
+        // Clear any app-specific localStorage items
+        localStorage.removeItem('supabase.auth.token');
+        // You might have other keys to clear
+        
+        // Clear sessionStorage as well
+        sessionStorage.clear();
+      }
+      
+      // Force a hard redirect to login page
+      window.location.href = '/auth/login';
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if there's an error, redirect to login
+      window.location.href = '/auth/login';
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const getNameAbbreviation = useMemo(() => {
@@ -245,9 +279,9 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onLogout}>
+              <DropdownMenuItem onClick={onLogout} disabled={isLoggingOut}>
                 <LogOut />
-                Log out
+                {isLoggingOut ? 'Logging out...' : 'Log out'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
