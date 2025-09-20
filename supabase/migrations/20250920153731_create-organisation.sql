@@ -5,7 +5,7 @@ alter type "public"."user_role" rename to "user_role__old_version_to_be_dropped"
 create type "public"."user_role" as enum ('owner', 'fleet_admin', 'driver', 'renter', 'staff', 'support', 'superadmin', 'member');
 
 create table "public"."organizations" (
-    "id" uuid not null default uuid_generate_v4(),
+    "id" uuid not null default gen_random_uuid(),
     "name" text not null,
     "tax_register_number" text not null,
     "settings" jsonb default '{}'::jsonb,
