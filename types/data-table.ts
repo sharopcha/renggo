@@ -1,6 +1,7 @@
-import type { ColumnSort, Row, RowData } from "@tanstack/react-table";
+import type { ColumnDef, ColumnSort, Row, RowData } from "@tanstack/react-table";
 import type { DataTableConfig } from "@/config/data-table";
 import type { FilterItemSchema } from "@/lib/parsers";
+import { LucideIcon } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   // biome-ignore lint/correctness/noUnusedVariables: TValue is used in the ColumnMeta interface
@@ -38,3 +39,14 @@ export interface DataTableRowAction<TData> {
   row: Row<TData>;
   variant: "update" | "delete";
 }
+
+export type ColumnMeta = {
+  label: string;
+  placeholder?: string;
+  variant?: "text" | "select" | "date";
+  icon?: LucideIcon;
+};
+
+export type TypedColumnDef<T> = ColumnDef<T, any> & {
+  meta?: ColumnMeta;
+};

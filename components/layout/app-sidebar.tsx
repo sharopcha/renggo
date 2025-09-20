@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 
 import { SidebarMenuItems } from "@/components/layout/sidebar-menu-items";
-import { NavUser } from "@/components/layout/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -17,16 +16,11 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  }
-};
+import { useSupabase } from "@/lib/supabase/context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const { organization, claims } = useSupabase();
 
   return (
     <Sidebar variant="inset" {...props} collapsible="icon">
@@ -42,8 +36,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-medium">{organization?.name?.toUpperCase() || 'RENGGO'}</span>
+                  <span className="truncate text-xs">{ claims?.role || 'USER' }</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -54,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenuItems />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* Renggo logo should be here */}
       </SidebarFooter>
     </Sidebar>
   );

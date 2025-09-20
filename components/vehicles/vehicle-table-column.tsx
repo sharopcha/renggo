@@ -12,17 +12,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import Link from "next/link";
-
-export type ColumnMeta = {
-  label: string;
-  placeholder?: string;
-  variant?: "text" | "select" | "date";
-  icon?: LucideIcon;
-};
-
-export type TypedColumnDef<T> = ColumnDef<T, any> & {
-  meta?: ColumnMeta;
-};
+import { TypedColumnDef } from "@/types/data-table";
 
 export type Vehicle = {
   photoUrl: string;
@@ -60,7 +50,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
           </div>
         </div>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "plate",
@@ -71,7 +61,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
       ),
       cell: ({ row }) => <div>{row.getValue("plate")}</div>,
       enableColumnFilter: true,
-      enableSorting: true
+      enableSorting: true,
     },
     {
       id: "modelYear",
@@ -84,12 +74,10 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
           <p className="font-medium">
             {row.original.make} {row.original.model}
           </p>
-          <p className="text-sm text-muted-foreground">
-            {row.original.year}
-          </p>
+          <p className="text-sm text-muted-foreground">{row.original.year}</p>
         </div>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "class",
@@ -100,7 +88,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
       cell: ({ row }) => (
         <Badge variant="outline">{row.getValue("class")}</Badge>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "status",
@@ -111,7 +99,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
       cell: ({ row }) => (
         <Badge variant="outline">{row.getValue("status")}</Badge>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "location",
@@ -120,7 +108,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
         <DataTableColumnHeader column={column} title="Location" />
       ),
       cell: ({ row }) => <div>{row.getValue("location")}</div>,
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "odometerKm",
@@ -131,7 +119,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
       cell: ({ row }) => (
         <div>{row.getValue("odometerKm")?.toLocaleString()} km</div>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "utilizationPct",
@@ -150,7 +138,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
           <span className="text-sm">{row.getValue("utilizationPct")}%</span>
         </div>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "lifetimeRevenue",
@@ -161,7 +149,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
       cell: ({ row }) => (
         <div>€{row.getValue("lifetimeRevenue")?.toLocaleString()}</div>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
     {
       id: "more",
@@ -194,7 +182,7 @@ export const getVehicleColumns = (): TypedColumnDef<Vehicle>[] => {
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      enableColumnFilter: true
+      enableColumnFilter: true,
     },
   ];
-}
+};
