@@ -101,9 +101,11 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <NextIntlClientProvider>
-              <NuqsAdapter>{children}</NuqsAdapter>
+              <NuqsAdapter>
+                {children}
+                <Toaster richColors closeButton position="top-center" />
+              </NuqsAdapter>
             </NextIntlClientProvider>
-            <Toaster />
           </ThemeProvider>
         </Suspense>
       </body>

@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 type OtpType = "signup" | "magiclink" | "recovery" | "email_change" | "email";
+type Phase = "verifying" | "needs_code" | "needs_password" | "updating";
 
 function normalizeOtpType(raw: string | null): OtpType {
   switch (raw) {
@@ -38,10 +39,13 @@ export default function AcceptInvitePage() {
   const router = useRouter();
   const search = useSearchParams();
 
-  const [phase, setPhase] = useState<
-    "verifying" | "needs_password" | "updating"
-  >("verifying");
+  const [phase, setPhase] = useState<Phase>("verifying");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // code form
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [codeErr, setCodeErr] = useState<string | null>(null);
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

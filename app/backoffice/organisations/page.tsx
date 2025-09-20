@@ -14,28 +14,20 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useDataTable } from "@/hooks/use-data-table";
-import { createClient } from "@/lib/supabase/client";
 import { TypedColumnDef } from "@/types/data-table";
-import { Download, Plus } from "lucide-react";
-import Link from "next/link";
-import React, { useState, useTransition } from "react";
+import { Plus } from "lucide-react";
+import React, { useEffect, useState, useTransition } from "react";
 import { createOrganisationAndInvite } from "./actions";
-
-interface Organisation {
-  id: string;
-  name: string;
-  location: string;
-  createdAt: Date;
-}
-
-const columns: TypedColumnDef<Organisation>[] = [];
+import { Organization } from "@/types/supabase-utils";
+import { getOrgTableColumns } from "./_components/org-table-columns";
+import { createClient } from "@/lib/supabase/client";
 
 export default function OrganisationsPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [organisations, setOrganisations] = useState<Organization[]>([]);
   const [formData, setFormData] = useState({
     organisationName: "",
     taxRegisterNumber: "",
@@ -44,8 +36,24 @@ export default function OrganisationsPage() {
     lastName: "",
   });
 
+  const supabase = createClient();
+
+  useEffect(() => {
+    // Fetch organisation from supabase
+    const fetchOrganisations = async () => {
+      const { data } = await supabase
+        .from("organizations")
+        .select("*");
+      setOrganisations(data as Organization[]);
+    };
+
+    fetchOrganisations();
+  }, []);
+
+  const columns = React.useMemo(() => getOrgTableColumns(), []);
+
   const { table } = useDataTable({
-    data: [],
+    data: organisations,
     columns: columns,
     // Pass the total number of pages for the table
     pageCount: 10,
