@@ -25,7 +25,8 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSupabase } from "@/lib/supabase/context";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 type NavigationItem = {
   name: string;
@@ -36,7 +37,7 @@ type NavigationItem = {
 const superadminNavigation: NavigationItem[] = [
   { name: "Dashboard", url: "/backoffice", icon: LayoutDashboard },
   { name: "Organisations", url: "/backoffice/organisations", icon: Building2 },
-]
+];
 
 const organisationNavigation: NavigationItem[] = [
   { name: "Dashboard", url: "/backoffice", icon: LayoutDashboard },
@@ -53,25 +54,41 @@ const organisationNavigation: NavigationItem[] = [
 ];
 
 const isActive = (path: string, url: string) => {
-  if(url === "/backoffice") {
+  if (url === "/backoffice") {
     return path === url;
   }
-  
+
   return path === url || path.startsWith(`${url}/`);
-}
+};
 
 export function SidebarMenuItems() {
   const pathname = usePathname();
   const { claims } = useSupabase();
-  const [navigation, setNavigation] = useState<NavigationItem[]>([])
 
-  useEffect(() => {
-    if(claims?.role === 'superadmin') {
-      setNavigation(superadminNavigation)
-    } else {
-      setNavigation(organisationNavigation)
+  // Use useMemo to compute navigation based on claims
+  const navigation = useMemo(() => {
+    // Don't render anything if claims are not loaded yet
+    if (!claims) {
+      return [];
     }
-  }, [claims?.role])
+
+    if (claims.role === "superadmin") {
+      return superadminNavigation;
+    } else {
+      return organisationNavigation;
+    }
+  }, [claims]);
+
+  // Don't render menu items until we have claims
+  if (!claims) {
+    return (
+      <SidebarGroup>
+        <SidebarMenu>
+          {/* You could add a loading skeleton here if desired */}
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  }
 
   return (
     <SidebarGroup>
@@ -88,10 +105,13 @@ export function SidebarMenuItems() {
                   "hover:bg-gray-200 py-4.5 px-3"
                 )}
               >
-                <a href={item.url}>
+                <Link
+                  href={item.url}
+                  className="flex items-center gap-2 w-full"
+                >
                   <item.icon />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );
