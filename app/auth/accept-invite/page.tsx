@@ -98,41 +98,6 @@ export default function AcceptInvitePage() {
         );
         router.replace(`/auth/error?reason=${reason}`);
       }
-
-      // // 1) PKCE code flow
-      // const code = search.get("code");
-      // if (code) {
-      //   const { error } = await supabase.auth.exchangeCodeForSession(code);
-      //   if (!error) return router.replace("/backoffice");
-      //   // fall through to hash/token flow if needed
-      // }
-
-      // // 2) Hash or token_hash flow
-      // const hash = new URLSearchParams(window.location.hash.slice(1));
-      // const token_hash = search.get("token_hash") || hash.get("token_hash");
-
-      // if (token_hash) {
-      //   const type = normalizeOtpType(search.get("type") || hash.get("type"));
-      //   const { error } = await supabase.auth.verifyOtp({ type, token_hash });
-      //   if (!error) return router.replace("/backoffice");
-      // }
-
-      // // 3) Legacy access/refresh tokens in hash (rare)
-      // const access_token = hash.get("access_token");
-      // const refresh_token = hash.get("refresh_token");
-      // const expires_in = Number(hash.get("expires_in") ?? 0);
-      // if (access_token && refresh_token) {
-      //   const { error } = await supabase.auth.setSession({
-      //     access_token,
-      //     refresh_token,
-      //     expires_in,
-      //     token_type: "bearer",
-      //   } as any);
-      //   if (!error) return router.replace("/backoffice");
-      // }
-
-      // // If nothing matched, just go somewhere sane
-      // router.replace("/backoffice");
     })();
   }, [router, search, supabase]);
 
