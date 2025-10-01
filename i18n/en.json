@@ -1,5 +1,34 @@
 {
   "pageTitles": {
     "dashboard": "Dashboard"
+  },
+  "enums": {
+    "vehicleClass": {
+      "city_car": "City Car",
+      "economy": "Economy",
+      "compact": "Compact",
+      "midsize": "Midsize",
+      "standard": "Standard",
+      "full_size": "Full-size",
+      "crossover": "Crossover",
+      "suv_compact": "SUV (Compact)",
+      "suv_midsize": "SUV (Midsize)",
+      "suv_full_size": "SUV (Full-size)",
+      "sedan": "Sedan",
+      "hatchback": "Hatchback",
+      "wagon_estate": "Wagon / Estate",
+      "coupe": "Coupe",
+      "convertible_cabrio": "Convertible / Cabrio",
+      "pickup": "Pickup",
+      "minivan_mpv": "Minivan / MPV",
+      "passenger_van": "Passenger Van",
+      "cargo_van": "Cargo Van",
+      "offroad_4x4": "Off-road / 4×4",
+      "sports_performance": "Sports / Performance",
+      "premium": "Premium",
+      "luxury": "Luxury",
+      "electric_bev": "Electric (BEV)",
+      "hybrid_phev": "Hybrid / PHEV"
+    }
   }
 }

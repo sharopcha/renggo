@@ -66,10 +66,12 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string
+          first_name: string | null
           full_name: string | null
           id: string
           is_verified: boolean | null
           last_login_at: string | null
+          last_name: string | null
           locale: string | null
           metadata: Json
           onboarding_status: string | null
@@ -85,10 +87,12 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email: string
+          first_name?: string | null
           full_name?: string | null
           id?: string
           is_verified?: boolean | null
           last_login_at?: string | null
+          last_name?: string | null
           locale?: string | null
           metadata?: Json
           onboarding_status?: string | null
@@ -104,10 +108,12 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string
+          first_name?: string | null
           full_name?: string | null
           id?: string
           is_verified?: boolean | null
           last_login_at?: string | null
+          last_name?: string | null
           locale?: string | null
           metadata?: Json
           onboarding_status?: string | null
@@ -119,7 +125,86 @@ export type Database = {
           user_id?: string | null
           verification_status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicles: {
+        Row: {
+          base_daily_rate_eur: number | null
+          created_at: string | null
+          id: string
+          lifetime_revenue_eur: number | null
+          location: string | null
+          make: string
+          model: string
+          odometer_km: number | null
+          organization_id: string
+          photo_url: string | null
+          plate: string
+          rating: number | null
+          total_trips: number | null
+          updated_at: string | null
+          utilization_pct: number | null
+          vehicle_class: string
+          vin: string | null
+          year: number
+        }
+        Insert: {
+          base_daily_rate_eur?: number | null
+          created_at?: string | null
+          id?: string
+          lifetime_revenue_eur?: number | null
+          location?: string | null
+          make: string
+          model: string
+          odometer_km?: number | null
+          organization_id: string
+          photo_url?: string | null
+          plate: string
+          rating?: number | null
+          total_trips?: number | null
+          updated_at?: string | null
+          utilization_pct?: number | null
+          vehicle_class: string
+          vin?: string | null
+          year: number
+        }
+        Update: {
+          base_daily_rate_eur?: number | null
+          created_at?: string | null
+          id?: string
+          lifetime_revenue_eur?: number | null
+          location?: string | null
+          make?: string
+          model?: string
+          odometer_km?: number | null
+          organization_id?: string
+          photo_url?: string | null
+          plate?: string
+          rating?: number | null
+          total_trips?: number | null
+          updated_at?: string | null
+          utilization_pct?: number | null
+          vehicle_class?: string
+          vin?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -164,6 +249,8 @@ export type Database = {
         | "staff"
         | "support"
         | "superadmin"
+        | "member"
+      vehicle_status: "available" | "on_trip" | "maintenance" | "inactive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -302,7 +389,9 @@ export const Constants = {
         "staff",
         "support",
         "superadmin",
+        "member",
       ],
+      vehicle_status: ["available", "on_trip", "maintenance", "inactive"],
     },
   },
 } as const
