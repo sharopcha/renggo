@@ -12,6 +12,20 @@ import { Vehicle } from "@/types/supabase-utils";
 import VehiclesTable from "./_components/vehicles-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import AddVehicle from "./_components/add-vehicle";
 
 interface IndexPageProps {
   searchParams: Promise<SearchParams>;
@@ -29,8 +43,8 @@ export default async function VehiclesPage(props: IndexPageProps) {
     queryFn: async () => {
       let query = supabase.from("vehicles").select("*");
 
-      const modelYear = (search.modelYear ?? "").trim()
-      if(modelYear !== '') {
+      const modelYear = (search.modelYear ?? "").trim();
+      if (modelYear !== "") {
         // numeric? treat as year match OR model substring
         const asNum = Number(modelYear);
         const isYear =
@@ -50,12 +64,16 @@ export default async function VehiclesPage(props: IndexPageProps) {
         }
       }
 
-      const vehicleClasses = (search.vehicle_class ?? "").trim()?.split(",") || [];
-      if(vehicleClasses.length > 0) {
-        query = query.in("vehicle_class", vehicleClasses);
+      if (search.vehicle_class?.length > 0) {
+        const vehicleClasses = search.vehicle_class?.trim()?.split(",") || [];
+        if (vehicleClasses) {
+          query = query.in("vehicle_class", vehicleClasses);
+        }
       }
 
-      const { data, error } = await query.order("created_at", { ascending: false });
+      const { data, error } = await query.order("created_at", {
+        ascending: false,
+      });
 
       if (error) throw error;
       return data as Vehicle[];
@@ -65,6 +83,15 @@ export default async function VehiclesPage(props: IndexPageProps) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <main className="flex-1 overflow-auto p-6">
+        <div className="flex items-end justify-between mb-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold">Vehicles</h1>
+            <div className="text-sm text-muted-foreground">
+              Manage your fleet vehicles and their details
+            </div>
+          </div>
+          <AddVehicle />
+        </div>
         <VehiclesTable />
       </main>
     </HydrationBoundary>

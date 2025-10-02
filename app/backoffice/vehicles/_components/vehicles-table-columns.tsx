@@ -22,20 +22,18 @@ import type { DataTableRowAction } from "@/types/data-table";
 
 import { Vehicle } from "@/types/supabase-utils";
 import { vehicleCalssIcons } from "../_lib/utils";
+import { useTranslations } from "next-intl";
 
-interface GetVehiclesTableColumnsProps {
-  setRowAction: React.Dispatch<
-    React.SetStateAction<DataTableRowAction<Vehicle> | null>
-  >;
+type Props = {
+  setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<Vehicle> | null>>;
+  // Map of slug -> localized label for filter options (can be built with tClass below)
   vehicleClassEnum: Record<string, string>;
-}
+};
 
-export function getVehiclesTableColumns({
-  setRowAction,
-  vehicleClassEnum,
-}: GetVehiclesTableColumnsProps): ColumnDef<Vehicle>[] {
+export function useVehiclesTableColumns({ setRowAction, vehicleClassEnum }: Props) {
+  const t = useTranslations();
 
-  return [
+  return React.useMemo<ColumnDef<Vehicle>[]>(() => [
     {
       id: "select",
       header: ({ table }) => (
@@ -104,7 +102,7 @@ export function getVehiclesTableColumns({
       cell: ({ row }) => {
         return (
           <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
-            <span className="capitalize">{row.getValue('vehicle_class')}</span>
+            <span className="capitalize">{t(`enums.vehicleClass.${row.getValue('vehicle_class')}`)}</span>
           </Badge>
         );
       },
@@ -266,5 +264,6 @@ export function getVehiclesTableColumns({
       },
       size: 40,
     },
-  ];
+  ], [setRowAction, t, vehicleClassEnum])
 }
+

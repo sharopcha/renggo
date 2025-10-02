@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMessages } from "next-intl";
 
 import { DataTable } from "@/components/data-table/data-table";
@@ -15,7 +15,9 @@ import { Vehicle } from "@/types/supabase-utils";
 import type { DataTableRowAction } from "@/types/data-table";
 import { createClient } from "@/lib/supabase/client";
 import { TasksTableActionBar } from "./vehicles-table-action-bar";
-import { getVehiclesTableColumns } from "./vehicles-table-columns";
+import {
+  useVehiclesTableColumns
+} from "./vehicles-table-columns";
 import { useDataTable } from "@/hooks/use-data-table";
 import { getVehiles } from "../_lib/queries";
 
@@ -48,17 +50,13 @@ export default function VehiclesTable() {
   const [rowAction, setRowAction] =
     React.useState<DataTableRowAction<Vehicle> | null>(null);
 
-  const columns = React.useMemo(
-    () =>
-      getVehiclesTableColumns({
-        setRowAction,
-        vehicleClassEnum: (messages as any).enums?.vehicleClass as Record<
-          string,
-          string
-        >,
-      }),
-    [setRowAction, messages]
-  );
+  const columns = useVehiclesTableColumns({
+    setRowAction,
+    vehicleClassEnum: (messages as any).enums?.vehicleClass as Record<
+      string,
+      string
+    >,
+  });
 
   const { table, shallow, debounceMs, throttleMs } = useDataTable({
     data: data || [],

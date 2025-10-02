@@ -80,7 +80,10 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
+      <DialogContent
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        className="sm:max-w-[70dvw] max-h-[90vh] p-0 overflow-hidden flex flex-col">
         {/* Sticky Header */}
         <div className="sticky top-0 z-10 bg-background border-b px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
@@ -96,7 +99,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
           </div>
         </div>
 
-        {/* Scrollable Body */}
+       
         <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* A. Vehicle Info */}
@@ -163,8 +166,8 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="class">Vehicle Class *</Label>
-                  <Select value={formData.class} onValueChange={(value) => updateFormData("class", value)}>
-                    <SelectTrigger className="h-10">
+                  <Select  value={formData.class} onValueChange={(value) => updateFormData("class", value)}>
+                    <SelectTrigger className="h-10 w-full">
                       <SelectValue placeholder="Select class" />
                     </SelectTrigger>
                     <SelectContent>
@@ -204,7 +207,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.transmission}
                     onValueChange={(value) => updateFormData("transmission", value)}
                   >
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-10 w-full">
                       <SelectValue placeholder="Select transmission" />
                     </SelectTrigger>
                     <SelectContent>
@@ -217,7 +220,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 <div className="space-y-2">
                   <Label htmlFor="fuelType">Fuel Type</Label>
                   <Select value={formData.fuelType} onValueChange={(value) => updateFormData("fuelType", value)}>
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-10 w-full">
                       <SelectValue placeholder="Select fuel type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -263,7 +266,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="status">Status</Label>
                   <Select value={formData.status} onValueChange={(value) => updateFormData("status", value)}>
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-10 w-1/2 sm:w-full">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -397,7 +400,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 <div className="space-y-2">
                   <Label htmlFor="location">City *</Label>
                   <Select value={formData.location} onValueChange={(value) => updateFormData("location", value)}>
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-10 w-full">
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -422,7 +425,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
           </form>
         </div>
 
-        {/* Sticky Footer */}
+       
         <div className="sticky bottom-0 z-10 bg-background border-t px-6 py-4 flex-shrink-0">
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

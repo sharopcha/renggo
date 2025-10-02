@@ -11,7 +11,7 @@ import { mockVehicles, type Vehicle } from "@/lib/mock-data"
 import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, Power } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { AddVehicleModal } from "./add-vehicle-modal"
+import { AddVehicleModal } from "../../app/backoffice/vehicles/_components/add-vehicle-modal"
 
 const getStatusColor = (status: Vehicle["status"]) => {
   switch (status) {
