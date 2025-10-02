@@ -23,7 +23,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { organization, claims } = useSupabase();
 
   return (
-    <Sidebar variant="inset" {...props} collapsible="icon">
+    <Sidebar variant="inset" {...props} collapsible="icon" >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

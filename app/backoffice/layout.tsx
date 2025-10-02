@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Header } from "@/components/layout/header";
@@ -16,13 +16,26 @@ export default function BackofficeLayout({
   children: React.ReactNode;
 }) {
   const [queryClient] = useState(() => new QueryClient());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+    localStorage.setItem('sidebarOpen', JSON.stringify(!isSidebarOpen));
+  }
+
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebarOpen');
+    if (savedState !== null) {
+      setIsSidebarOpen(JSON.parse(savedState));
+    }
+  }, []);
 
   return (
     <Suspense fallback={null}>
       <SupabaseProvider>
         <FeatureFlagsProvider>
           <QueryClientProvider client={queryClient}>
-            <SidebarProvider>
+            <SidebarProvider open={isSidebarOpen} onOpenChange={toggleSidebar}>
               <AppSidebar />
               <SidebarInset>
                 <Header />
