@@ -8,6 +8,7 @@ import { SupabaseProvider } from "@/lib/supabase/context";
 import { FeatureFlagsProvider } from "@/components/feature-flags-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import Loader from "@/components/layout/loader";
 
 
 export default function BackofficeLayout({
@@ -31,7 +32,7 @@ export default function BackofficeLayout({
   }, []);
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loader />}>
       <SupabaseProvider>
         <FeatureFlagsProvider>
           <QueryClientProvider client={queryClient}>

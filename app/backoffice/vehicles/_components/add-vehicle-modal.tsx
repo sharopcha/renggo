@@ -114,7 +114,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     onChange={(e) => updateFormData("plate", e.target.value)}
                     placeholder="123 ABC"
                     required
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -125,7 +124,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     onChange={(e) => updateFormData("vin", e.target.value)}
                     placeholder="WVWZZZ1JZXW000001"
                     required
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -136,7 +134,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     onChange={(e) => updateFormData("make", e.target.value)}
                     placeholder="Toyota"
                     required
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -147,7 +144,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     onChange={(e) => updateFormData("model", e.target.value)}
                     placeholder="Corolla"
                     required
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -161,13 +157,12 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     min="2000"
                     max="2025"
                     required
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="class">Vehicle Class *</Label>
                   <Select  value={formData.class} onValueChange={(value) => updateFormData("class", value)}>
-                    <SelectTrigger className="h-10 w-full">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select class" />
                     </SelectTrigger>
                     <SelectContent>
@@ -185,7 +180,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.color}
                     onChange={(e) => updateFormData("color", e.target.value)}
                     placeholder="Silver"
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -198,7 +192,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     placeholder="5"
                     min="2"
                     max="9"
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -207,7 +200,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.transmission}
                     onValueChange={(value) => updateFormData("transmission", value)}
                   >
-                    <SelectTrigger className="h-10 w-full">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select transmission" />
                     </SelectTrigger>
                     <SelectContent>
@@ -220,7 +213,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 <div className="space-y-2">
                   <Label htmlFor="fuelType">Fuel Type</Label>
                   <Select value={formData.fuelType} onValueChange={(value) => updateFormData("fuelType", value)}>
-                    <SelectTrigger className="h-10 w-full">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select fuel type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -249,7 +242,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.avgConsumption}
                     onChange={(e) => updateFormData("avgConsumption", e.target.value)}
                     placeholder="6.5"
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -260,13 +252,12 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.odometer}
                     onChange={(e) => updateFormData("odometer", e.target.value)}
                     placeholder="50000"
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="status">Status</Label>
                   <Select value={formData.status} onValueChange={(value) => updateFormData("status", value)}>
-                    <SelectTrigger className="h-10 w-1/2 sm:w-full">
+                    <SelectTrigger className="w-1/2 sm:w-full">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -294,7 +285,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     onChange={(e) => updateFormData("baseDailyRate", e.target.value)}
                     placeholder="35"
                     required
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -306,7 +296,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.weekendMultiplier}
                     onChange={(e) => updateFormData("weekendMultiplier", e.target.value)}
                     placeholder="1.2"
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -317,7 +306,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.includedKmPerDay}
                     onChange={(e) => updateFormData("includedKmPerDay", e.target.value)}
                     placeholder="200"
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -329,7 +317,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.overageFee}
                     onChange={(e) => updateFormData("overageFee", e.target.value)}
                     placeholder="0.25"
-                    className="h-10"
                   />
                 </div>
               </div>
@@ -348,7 +335,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     type="date"
                     value={formData.registrationExpiry}
                     onChange={(e) => updateFormData("registrationExpiry", e.target.value)}
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2">
@@ -358,7 +344,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     type="date"
                     value={formData.insuranceExpiry}
                     onChange={(e) => updateFormData("insuranceExpiry", e.target.value)}
-                    className="h-10"
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
@@ -368,7 +353,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     type="date"
                     value={formData.inspectionExpiry}
                     onChange={(e) => updateFormData("inspectionExpiry", e.target.value)}
-                    className="h-10"
                   />
                 </div>
               </div>
@@ -400,7 +384,7 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                 <div className="space-y-2">
                   <Label htmlFor="location">City *</Label>
                   <Select value={formData.location} onValueChange={(value) => updateFormData("location", value)}>
-                    <SelectTrigger className="h-10 w-full">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -417,7 +401,6 @@ export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
                     value={formData.address}
                     onChange={(e) => updateFormData("address", e.target.value)}
                     placeholder="Optional address or location details"
-                    className="h-10"
                   />
                 </div>
               </div>
