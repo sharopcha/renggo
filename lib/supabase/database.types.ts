@@ -32,31 +32,196 @@ export type Database = {
       [_ in never]: never
     }
   }
-  pgbouncer: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      get_auth: {
-        Args: { p_usename: string }
-        Returns: {
-          password: string
-          username: string
-        }[]
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
+      claim_attachments: {
+        Row: {
+          claim_id: string
+          content_type: string | null
+          created_at: string | null
+          filename: string | null
+          id: string
+          metadata: Json | null
+          storage_path: string
+        }
+        Insert: {
+          claim_id: string
+          content_type?: string | null
+          created_at?: string | null
+          filename?: string | null
+          id?: string
+          metadata?: Json | null
+          storage_path: string
+        }
+        Update: {
+          claim_id?: string
+          content_type?: string | null
+          created_at?: string | null
+          filename?: string | null
+          id?: string
+          metadata?: Json | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_attachments_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_history: {
+        Row: {
+          changed_by: string | null
+          claim_id: string
+          created_at: string | null
+          id: string
+          note: string | null
+          status_from: string | null
+          status_to: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          claim_id: string
+          created_at?: string | null
+          id?: string
+          note?: string | null
+          status_from?: string | null
+          status_to?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          claim_id?: string
+          created_at?: string | null
+          id?: string
+          note?: string | null
+          status_from?: string | null
+          status_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_history_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claims: {
+        Row: {
+          assignee: string | null
+          claim_number: string | null
+          created_at: string | null
+          customer_id: string | null
+          deductible_eur: number | null
+          description: string | null
+          estimated_cost_eur: number | null
+          id: string
+          incident_date: string | null
+          incident_type: string | null
+          metadata: Json | null
+          organization_id: string
+          payout_amount_eur: number | null
+          policy_id: string | null
+          rental_id: string | null
+          reported_at: string | null
+          settlement_reference: string | null
+          source: string | null
+          status: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          assignee?: string | null
+          claim_number?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          deductible_eur?: number | null
+          description?: string | null
+          estimated_cost_eur?: number | null
+          id?: string
+          incident_date?: string | null
+          incident_type?: string | null
+          metadata?: Json | null
+          organization_id: string
+          payout_amount_eur?: number | null
+          policy_id?: string | null
+          rental_id?: string | null
+          reported_at?: string | null
+          settlement_reference?: string | null
+          source?: string | null
+          status?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          assignee?: string | null
+          claim_number?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          deductible_eur?: number | null
+          description?: string | null
+          estimated_cost_eur?: number | null
+          id?: string
+          incident_date?: string | null
+          incident_type?: string | null
+          metadata?: Json | null
+          organization_id?: string
+          payout_amount_eur?: number | null
+          policy_id?: string | null
+          rental_id?: string | null
+          reported_at?: string | null
+          settlement_reference?: string | null
+          source?: string | null
+          status?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_rental_id_fkey"
+            columns: ["rental_id"]
+            isOneToOne: false
+            referencedRelation: "rentals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_policy_gap"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "claims_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address: string | null
@@ -144,10 +309,123 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "customers_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "customers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_policies: {
+        Row: {
+          active: boolean | null
+          coverage: Json | null
+          created_at: string | null
+          end_date: string
+          id: string
+          insurer_id: string | null
+          metadata: Json | null
+          organization_id: string
+          policy_number: string
+          policy_type_key: string | null
+          premium_eur: number | null
+          start_date: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          coverage?: Json | null
+          created_at?: string | null
+          end_date: string
+          id?: string
+          insurer_id?: string | null
+          metadata?: Json | null
+          organization_id: string
+          policy_number: string
+          policy_type_key?: string | null
+          premium_eur?: number | null
+          start_date: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          coverage?: Json | null
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          insurer_id?: string | null
+          metadata?: Json | null
+          organization_id?: string
+          policy_number?: string
+          policy_type_key?: string | null
+          premium_eur?: number | null
+          start_date?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_policies_insurer_id_fkey"
+            columns: ["insurer_id"]
+            isOneToOne: false
+            referencedRelation: "insurers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_policies_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_policies_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_policy_gap"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "insurance_policies_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurers: {
+        Row: {
+          contact: Json | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          organization_id: string
+        }
+        Insert: {
+          contact?: Json | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          organization_id: string
+        }
+        Update: {
+          contact?: Json | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -178,16 +456,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "maintenance_task_notes_created_by_fkey",
-            columns: ["created_by"],
-            referencedRelation: "user_profiles",
-            referencedColumns: ["id"],
+            foreignKeyName: "maintenance_task_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "maintenance_task_notes_task_id_fkey",
-            columns: ["task_id"],
-            referencedRelation: "maintenance_tasks",
-            referencedColumns: ["id"],
+            foreignKeyName: "maintenance_task_notes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_tasks"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -239,16 +519,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "maintenance_tasks_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "maintenance_tasks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "maintenance_tasks_vehicle_id_fkey",
-            columns: ["vehicle_id"],
-            referencedRelation: "vehicles",
-            referencedColumns: ["id"],
+            foreignKeyName: "maintenance_tasks_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_policy_gap"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "maintenance_tasks_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -338,7 +627,7 @@ export type Database = {
           method?: Database["public"]["Enums"]["payment_method"]
           method_details?: string | null
           net_amount_eur?: number | null
-          organization_id?: string | null
+          organization_id?: string
           platform_fee_eur?: number | null
           processed_at?: string | null
           processor?: string | null
@@ -351,22 +640,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "payments_customer_id_fkey",
-            columns: ["customer_id"],
-            referencedRelation: "customers",
-            referencedColumns: ["id"],
+            foreignKeyName: "payments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "payments_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "payments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "payments_rental_id_fkey",
-            columns: ["rental_id"],
-            referencedRelation: "rentals",
-            referencedColumns: ["id"],
+            foreignKeyName: "payments_rental_id_fkey"
+            columns: ["rental_id"]
+            isOneToOne: false
+            referencedRelation: "rentals"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -424,10 +716,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "payouts_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "payouts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_types: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          key: string
+          organization_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key: string
+          organization_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+          organization_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_types_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -506,22 +834,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "rentals_customer_id_fkey",
-            columns: ["customer_id"],
-            referencedRelation: "customers",
-            referencedColumns: ["id"],
+            foreignKeyName: "rentals_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "rentals_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "rentals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "rentals_vehicle_id_fkey",
-            columns: ["vehicle_id"],
-            referencedRelation: "vehicles",
-            referencedColumns: ["id"],
+            foreignKeyName: "rentals_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_policy_gap"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "rentals_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -591,10 +929,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_profiles_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "user_profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -661,16 +1000,83 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "vehicles_organization_id_fkey",
-            columns: ["organization_id"],
-            referencedRelation: "organizations",
-            referencedColumns: ["id"],
+            foreignKeyName: "vehicles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      claim_incident_types: {
+        Row: {
+          avg_estimated_cost_eur: number | null
+          incident_type: string | null
+          occurrences: number | null
+        }
+        Relationships: []
+      }
+      claim_stats_customer: {
+        Row: {
+          claim_count: number | null
+          customer_id: string | null
+          total_estimated_cost_eur: number | null
+          total_payout_eur: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_stats_vehicle: {
+        Row: {
+          claim_count: number | null
+          first_incident: string | null
+          last_incident: string | null
+          total_estimated_cost_eur: number | null
+          total_payout_eur: number | null
+          vehicle_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_policy_gap"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "claims_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_policy_gap: {
+        Row: {
+          organization_id: string | null
+          plate: string | null
+          vehicle_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
@@ -698,509 +1104,6 @@ export type Database = {
         | "superadmin"
         | "member"
       vehicle_status: "available" | "on_trip" | "maintenance" | "inactive"
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-  storage: {
-    Tables: {
-      buckets: {
-        Row: {
-          allowed_mime_types: string[] | null
-          avif_autodetection: boolean | null
-          created_at: string | null
-          file_size_limit: number | null
-          id: string
-          name: string
-          owner: string | null
-          owner_id: string | null
-          public: boolean | null
-          type: Database["storage"]["Enums"]["buckettype"]
-          updated_at: string | null
-        }
-        Insert: {
-          allowed_mime_types?: string[] | null
-          avif_autodetection?: boolean | null
-          created_at?: string | null
-          file_size_limit?: number | null
-          id: string
-          name: string
-          owner?: string | null
-          owner_id?: string | null
-          public?: boolean | null
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string | null
-        }
-        Update: {
-          allowed_mime_types?: string[] | null
-          avif_autodetection?: boolean | null
-          created_at?: string | null
-          file_size_limit?: number | null
-          id?: string
-          name?: string
-          owner?: string | null
-          owner_id?: string | null
-          public?: boolean | null
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      buckets_analytics: {
-        Row: {
-          created_at: string
-          format: string
-          id: string
-          type: Database["storage"]["Enums"]["buckettype"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          format?: string
-          id: string
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          format?: string
-          id?: string
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      iceberg_namespaces: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "iceberg_namespaces_bucket_id_fkey",
-            columns: ["bucket_id"],
-            referencedRelation: "buckets_analytics",
-            referencedColumns: ["id"],
-          },
-        ]
-      }
-      iceberg_tables: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          id: string
-          location: string
-          name: string
-          namespace_id: string
-          updated_at: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          id?: string
-          location: string
-          name: string
-          namespace_id: string
-          updated_at?: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          id?: string
-          location?: string
-          name?: string
-          namespace_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "iceberg_tables_bucket_id_fkey",
-            columns: ["bucket_id"],
-            referencedRelation: "buckets_analytics",
-            referencedColumns: ["id"],
-          },
-          {
-            foreignKeyName: "iceberg_tables_namespace_id_fkey",
-            columns: ["namespace_id"],
-            referencedRelation: "iceberg_namespaces",
-            referencedColumns: ["id"],
-          },
-        ]
-      }
-      migrations: {
-        Row: {
-          executed_at: string | null
-          hash: string
-          id: number
-          name: string
-        }
-        Insert: {
-          executed_at?: string | null
-          hash: string
-          id: number
-          name: string
-        }
-        Update: {
-          executed_at?: string | null
-          hash?: string
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
-      objects: {
-        Row: {
-          bucket_id: string | null
-          created_at: string | null
-          id: string
-          last_accessed_at: string | null
-          level: number | null
-          metadata: Json | null
-          name: string | null
-          owner: string | null
-          owner_id: string | null
-          path_tokens: string[] | null
-          updated_at: string | null
-          user_metadata: Json | null
-          version: string | null
-        }
-        Insert: {
-          bucket_id?: string | null
-          created_at?: string | null
-          id?: string
-          last_accessed_at?: string | null
-          level?: number | null
-          metadata?: Json | null
-          name?: string | null
-          owner?: string | null
-          owner_id?: string | null
-          path_tokens?: string[] | null
-          updated_at?: string | null
-          user_metadata?: Json | null
-          version?: string | null
-        }
-        Update: {
-          bucket_id?: string | null
-          created_at?: string | null
-          id?: string
-          last_accessed_at?: string | null
-          level?: number | null
-          metadata?: Json | null
-          name?: string | null
-          owner?: string | null
-          owner_id?: string | null
-          path_tokens?: string[] | null
-          updated_at?: string | null
-          user_metadata?: Json | null
-          version?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "objects_bucketId_fkey",
-            columns: ["bucket_id"],
-            referencedRelation: "buckets",
-            referencedColumns: ["id"],
-          },
-        ]
-      }
-      prefixes: {
-        Row: {
-          bucket_id: string
-          created_at: string | null
-          level: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string | null
-          level?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string | null
-          level?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prefixes_bucketId_fkey",
-            columns: ["bucket_id"],
-            referencedRelation: "buckets",
-            referencedColumns: ["id"],
-          },
-        ]
-      }
-      s3_multipart_uploads: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          id: string
-          in_progress_size: number
-          key: string
-          owner_id: string | null
-          upload_signature: string
-          user_metadata: Json | null
-          version: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          id: string
-          in_progress_size?: number
-          key: string
-          owner_id?: string | null
-          upload_signature: string
-          user_metadata?: Json | null
-          version: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          id?: string
-          in_progress_size?: number
-          key?: string
-          owner_id?: string | null
-          upload_signature?: string
-          user_metadata?: Json | null
-          version?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "s3_multipart_uploads_bucket_id_fkey",
-            columns: ["bucket_id"],
-            referencedRelation: "buckets",
-            referencedColumns: ["id"],
-          },
-        ]
-      }
-      s3_multipart_uploads_parts: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          etag: string
-          id: string
-          key: string
-          owner_id: string | null
-          part_number: number
-          size: number
-          upload_id: string
-          version: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          etag: string
-          id?: string
-          key: string
-          owner_id?: string | null
-          part_number: number
-          size?: number
-          upload_id: string
-          version: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          etag?: string
-          id?: string
-          key?: string
-          owner_id?: string | null
-          part_number?: number
-          size?: number
-          upload_id?: string
-          version?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "s3_multipart_uploads_parts_bucket_id_fkey",
-            columns: ["bucket_id"],
-            referencedRelation: "buckets",
-            referencedColumns: ["id"],
-          },
-          {
-            foreignKeyName: "s3_multipart_uploads_parts_upload_id_fkey",
-            columns: ["upload_id"],
-            referencedRelation: "s3_multipart_uploads",
-            referencedColumns: ["id"],
-          },
-        ]
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      add_prefixes: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: undefined
-      }
-      can_insert_object: {
-        Args: { bucketid: string; metadata: Json; name: string; owner: string }
-        Returns: undefined
-      }
-      delete_leaf_prefixes: {
-        Args: { bucket_ids: string[]; names: string[] }
-        Returns: undefined
-      }
-      delete_prefix: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: boolean
-      }
-      extension: { Args: { name: string }; Returns: string }
-      filename: { Args: { name: string }; Returns: string }
-      foldername: { Args: { name: string }; Returns: string[] }
-      get_level: { Args: { name: string }; Returns: number }
-      get_prefix: { Args: { name: string }; Returns: string }
-      get_prefixes: { Args: { name: string }; Returns: string[] }
-      get_size_by_bucket: {
-        Args: never
-        Returns: {
-          bucket_id: string
-          size: number
-        }[]
-      }
-      list_multipart_uploads_with_delimiter: {
-        Args: {
-          bucket_id: string
-          delimiter_param: string
-          max_keys?: number
-          next_key_token?: string
-          next_upload_token?: string
-          prefix_param: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          key: string
-        }[]
-      }
-      list_objects_with_delimiter: {
-        Args: {
-          bucket_id: string
-          delimiter_param: string
-          max_keys?: number
-          next_token?: string
-          prefix_param: string
-          start_after?: string
-        }
-        Returns: {
-          id: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      lock_top_prefixes: {
-        Args: { bucket_ids: string[]; names: string[] }
-        Returns: undefined
-      }
-      operation: { Args: never; Returns: string }
-      search: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_legacy_v1: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_v1_optimised: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_v2: {
-        Args: {
-          bucket_name: string
-          levels?: number
-          limits?: number
-          prefix: string
-          sort_column?: string
-          sort_column_after?: string
-          sort_order?: string
-          start_after?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          key: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-    }
-    Enums: {
-      buckettype: "STANDARD" | "ANALYTICS"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1329,9 +1232,6 @@ export const Constants = {
   graphql_public: {
     Enums: {},
   },
-  pgbouncer: {
-    Enums: {},
-  },
   public: {
     Enums: {
       maintenance_severity: ["Low", "Medium", "High"],
@@ -1358,11 +1258,6 @@ export const Constants = {
         "member",
       ],
       vehicle_status: ["available", "on_trip", "maintenance", "inactive"],
-    },
-  },
-  storage: {
-    Enums: {
-      buckettype: ["STANDARD", "ANALYTICS"],
     },
   },
 } as const

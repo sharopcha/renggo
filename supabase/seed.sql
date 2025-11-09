@@ -325,3 +325,126 @@ BEGIN
     (v_task2_id, 'Customer notified of timeline', 'Internal'),
     (v_task3_id, 'Customer reports rough idling', 'Internal');
 END $$;
+
+-- Insert sample insurance claims, attachments and history
+DO $$
+DECLARE
+  v_org_id uuid := '1baaf78c-3719-45bc-9cf8-d3b3b3059006';
+  -- Vehicles
+  v_vehicle1_id uuid; -- EST-1234 Toyota Corolla
+  v_vehicle2_id uuid; -- EST-1122 Nissan Qashqai
+  v_vehicle3_id uuid; -- EST-3456 VW Caravelle
+  v_vehicle4_id uuid; -- EST-2211 Audi Q7
+  v_vehicle5_id uuid; -- EST-0123 Ford Transit
+  -- Customers
+  v_customer1_id uuid; -- Maria Tamm
+  v_customer2_id uuid; -- Andrus Kask
+  v_customer3_id uuid; -- Laura Mägi
+  v_customer4_id uuid; -- Kristjan Saar
+  -- Rentals
+  v_rental1_id uuid; -- Corolla + Maria (2024-12-15..18)
+  v_rental3_id uuid; -- Caravelle + Laura (2025-01-05..08)
+  v_rental5_id uuid; -- Transit + Kristjan (2024-12-28..31)
+  v_rental6_id uuid; -- Qashqai + Andrus (2025-01-08..11)
+  -- Policies
+  v_policy_vehicle1 uuid;
+  v_policy_vehicle2 uuid;
+  v_policy_vehicle3 uuid;
+  -- Claims
+  c1 uuid := gen_random_uuid();
+  c2 uuid := gen_random_uuid();
+  c3 uuid := gen_random_uuid();
+  c4 uuid := gen_random_uuid();
+BEGIN
+  -- Resolve vehicle IDs
+  SELECT id INTO v_vehicle1_id FROM public.vehicles WHERE plate = 'EST-1234' LIMIT 1;
+  SELECT id INTO v_vehicle2_id FROM public.vehicles WHERE plate = 'EST-1122' LIMIT 1;
+  SELECT id INTO v_vehicle3_id FROM public.vehicles WHERE plate = 'EST-3456' LIMIT 1;
+  SELECT id INTO v_vehicle4_id FROM public.vehicles WHERE plate = 'EST-2211' LIMIT 1;
+  SELECT id INTO v_vehicle5_id FROM public.vehicles WHERE plate = 'EST-0123' LIMIT 1;
+
+  -- Resolve customer IDs
+  SELECT id INTO v_customer1_id FROM public.customers WHERE email = 'maria.tamm@email.ee' LIMIT 1;
+  SELECT id INTO v_customer2_id FROM public.customers WHERE email = 'andrus.kask@gmail.com' LIMIT 1;
+  SELECT id INTO v_customer3_id FROM public.customers WHERE email = 'laura.magi@yahoo.com' LIMIT 1;
+  SELECT id INTO v_customer4_id FROM public.customers WHERE email = 'kristjan.saar@hotmail.com' LIMIT 1;
+
+  -- Resolve rental IDs by known tuples
+  SELECT id INTO v_rental1_id FROM public.rentals WHERE vehicle_id = v_vehicle1_id AND customer_id = v_customer1_id AND start_date = '2024-12-15 10:00:00+00' LIMIT 1;
+  SELECT id INTO v_rental3_id FROM public.rentals WHERE vehicle_id = v_vehicle3_id AND customer_id = v_customer3_id AND start_date = '2025-01-05 14:00:00+00' LIMIT 1;
+  SELECT id INTO v_rental5_id FROM public.rentals WHERE vehicle_id = v_vehicle5_id AND customer_id = v_customer4_id AND start_date = '2024-12-28 11:00:00+00' LIMIT 1;
+  SELECT id INTO v_rental6_id FROM public.rentals WHERE vehicle_id = v_vehicle2_id AND customer_id = v_customer2_id AND start_date = '2025-01-08 10:00:00+00' LIMIT 1;
+
+  -- Resolve policy IDs (if available)
+  SELECT id INTO v_policy_vehicle1 FROM public.insurance_policies WHERE vehicle_id = v_vehicle1_id ORDER BY created_at DESC LIMIT 1;
+  SELECT id INTO v_policy_vehicle2 FROM public.insurance_policies WHERE vehicle_id = v_vehicle2_id ORDER BY created_at DESC LIMIT 1;
+  SELECT id INTO v_policy_vehicle3 FROM public.insurance_policies WHERE vehicle_id = v_vehicle3_id ORDER BY created_at DESC LIMIT 1;
+
+  -- Claim 1: Minor collision during rental (Under Review)
+  INSERT INTO public.claims (
+    id, organization_id, vehicle_id, rental_id, customer_id, claim_number, policy_id,
+    reported_at, incident_date, source, description, status, assignee,
+    estimated_cost_eur, deductible_eur, incident_type, metadata
+  ) VALUES (
+    c1, v_org_id, v_vehicle1_id, v_rental1_id, v_customer1_id, 'CLM-001', v_policy_vehicle1,
+    '2024-12-16 09:00:00+00', '2024-12-16 08:30:00+00', 'Customer Report',
+    'Minor fender bender in parking lot. Rear bumper damage.', 'Under Review', 'Sarah Wilson',
+    1200.00, 250.00, 'Collision - Minor', jsonb_build_object('location', 'Tallinn Airport Parking')
+  );
+
+  -- Claim 2: Windshield crack (Submitted, active rental)
+  INSERT INTO public.claims (
+    id, organization_id, vehicle_id, rental_id, customer_id, claim_number, policy_id,
+    reported_at, incident_date, source, description, status, assignee,
+    estimated_cost_eur, deductible_eur, incident_type
+  ) VALUES (
+    c2, v_org_id, v_vehicle2_id, v_rental6_id, v_customer2_id, 'CLM-002', v_policy_vehicle2,
+    '2025-01-09 12:00:00+00', '2025-01-09 11:10:00+00', 'Customer Report',
+    'Windshield crack from road debris on highway.', 'Submitted', 'Mike Johnson',
+    800.00, 150.00, 'Glass - Windshield'
+  );
+
+  -- Claim 3: Bodywork (Approved on completed rental)
+  INSERT INTO public.claims (
+    id, organization_id, vehicle_id, rental_id, customer_id, claim_number, policy_id,
+    reported_at, incident_date, source, description, status, assignee,
+    estimated_cost_eur, payout_amount_eur, deductible_eur, incident_type
+  ) VALUES (
+    c3, v_org_id, v_vehicle3_id, v_rental3_id, v_customer3_id, 'CLM-003', v_policy_vehicle3,
+    '2025-01-07 10:00:00+00', '2025-01-06 17:45:00+00', 'Staff Report',
+    'Side mirror damaged in tight parking space.', 'Approved', 'Lisa Park',
+    3200.00, 2950.00, 250.00, 'Body - Mirror'
+  );
+
+  -- Claim 4: Tire puncture (Rejected, off-rental)
+  INSERT INTO public.claims (
+    id, organization_id, vehicle_id, rental_id, customer_id, claim_number,
+    reported_at, incident_date, source, description, status, assignee,
+    estimated_cost_eur, incident_type
+  ) VALUES (
+    c4, v_org_id, v_vehicle4_id, null, null, 'CLM-004',
+    '2025-01-04 09:30:00+00', '2025-01-03 18:00:00+00', 'Customer Report',
+    'Tire puncture claimed as vehicle defect.', 'Rejected', 'Tom Wilson',
+    150.00, 'Tire'
+  );
+
+  -- Attachments for claims
+  INSERT INTO public.claim_attachments (claim_id, storage_path, filename, content_type)
+  VALUES
+    (c1, 'claims/CLM-001/damage1.jpg', 'damage1.jpg', 'image/jpeg'),
+    (c1, 'claims/CLM-001/damage2.jpg', 'damage2.jpg', 'image/jpeg'),
+    (c2, 'claims/CLM-002/windshield1.jpg', 'windshield1.jpg', 'image/jpeg'),
+    (c3, 'claims/CLM-003/mirror1.jpg', 'mirror1.jpg', 'image/jpeg');
+
+  -- History timeline entries
+  INSERT INTO public.claim_history (claim_id, status_from, status_to, note, changed_by, created_at)
+  VALUES
+    (c1, null, 'Submitted', 'Claim submitted by customer', 'System', '2024-12-16 09:00:00+00'),
+    (c1, 'Submitted', 'Under Review', 'Assigned to handler', 'Admin', '2024-12-16 09:30:00+00'),
+    (c2, null, 'Submitted', 'Claim submitted by customer', 'System', '2025-01-09 12:00:00+00'),
+    (c3, null, 'Submitted', 'Claim submitted by staff', 'System', '2025-01-07 10:00:00+00'),
+    (c3, 'Submitted', 'Under Review', 'Assessment completed', 'Lisa Park', '2025-01-07 14:00:00+00'),
+    (c3, 'Under Review', 'Approved', 'Approved for repair & payout', 'Lisa Park', '2025-01-08 10:00:00+00'),
+    (c4, null, 'Submitted', 'Claim submitted by customer', 'System', '2025-01-04 09:30:00+00'),
+    (c4, 'Submitted', 'Rejected', 'Rejected - normal wear and tear', 'Tom Wilson', '2025-01-05 11:00:00+00');
+END $$;

@@ -100,17 +100,41 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
           setOrganization(null);
         } else if (row) {
           const p = row as ProfileRow;
-
-          // ✅ No rest destructuring needed
-          setProfile(p as UserProfile); // extra 'organization' field is fine
+          setProfile(p as UserProfile); // row includes organisation nested
           setOrganization((p["organization"] as Organisation) ?? null);
         } else {
+          // No profile row (user exists but not provisioned) – fall back to first organization if any
           setProfile(null);
           setOrganization(null);
+          try {
+            const { data: fallbackOrgs, error: orgErr } = await supabase
+              .from("organizations")
+              .select("id, name, tax_register_number, settings, created_at")
+              .limit(1);
+            if (!orgErr && fallbackOrgs && fallbackOrgs.length === 1) {
+              setOrganization(fallbackOrgs[0] as Organisation);
+              console.warn("SupabaseContext: Using fallback organization (no user profile found)");
+            }
+          } catch (e) {
+            console.error("SupabaseContext: Fallback organization fetch failed", e);
+          }
         }
       } else {
         setProfile(null);
         setOrganization(null);
+        // Anonymous session – attempt a public fallback organization (useful for initial demo seed)
+        try {
+          const { data: fallbackOrgs, error: orgErr } = await supabase
+            .from("organizations")
+            .select("id, name, tax_register_number, settings, created_at")
+            .limit(1);
+          if (!orgErr && fallbackOrgs && fallbackOrgs.length === 1) {
+            setOrganization(fallbackOrgs[0] as Organisation);
+            console.warn("SupabaseContext: Using anonymous fallback organization");
+          }
+        } catch (e) {
+          console.error("SupabaseContext: Anonymous fallback organization fetch failed", e);
+        }
       }
     } finally {
       setLoading(false);

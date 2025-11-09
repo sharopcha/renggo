@@ -2,7 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { listClaimsWithRefs, updateClaimStatus } from "@/lib/supabase/insurance"
+import { useSupabase } from "@/lib/supabase/context"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,96 +14,23 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Calendar, Car, User, DollarSign, FileText, MessageSquare, History, X } from "lucide-react"
 
-const mockClaims = [
-  {
-    id: "CLM-001",
-    vehicle: { plate: "ABC-123", model: "Toyota Corolla" },
-    renter: "John Smith",
-    incidentDate: "2024-01-15",
-    estimatedCost: 1200,
-    assignee: "Sarah Wilson",
-    status: "new",
-    description: "Minor fender bender in parking lot. Rear bumper damage.",
-    photos: ["damage1.jpg", "damage2.jpg"],
-    costBreakdown: { parts: 800, labor: 300, other: 100 },
-    notes: "Customer reported incident immediately. Photos uploaded.",
-    history: [
-      { date: "2024-01-15", action: "Claim submitted", user: "System" },
-      { date: "2024-01-15", action: "Assigned to Sarah Wilson", user: "Admin" },
-    ],
-  },
-  {
-    id: "CLM-002",
-    vehicle: { plate: "XYZ-789", model: "Honda Civic" },
-    renter: "Emma Davis",
-    incidentDate: "2024-01-12",
-    estimatedCost: 2500,
-    assignee: "Mike Johnson",
-    status: "assessing",
-    description: "Windshield crack from road debris on highway.",
-    photos: ["windshield1.jpg"],
-    costBreakdown: { parts: 400, labor: 150, other: 50 },
-    notes: "Waiting for mechanic assessment.",
-    history: [
-      { date: "2024-01-12", action: "Claim submitted", user: "System" },
-      { date: "2024-01-13", action: "Moved to assessing", user: "Mike Johnson" },
-    ],
-  },
-  {
-    id: "CLM-003",
-    vehicle: { plate: "DEF-456", model: "BMW X3" },
-    renter: "Robert Chen",
-    incidentDate: "2024-01-10",
-    estimatedCost: 3200,
-    assignee: "Lisa Park",
-    status: "awaiting-docs",
-    description: "Side mirror damaged in tight parking space.",
-    photos: ["mirror1.jpg", "mirror2.jpg"],
-    costBreakdown: { parts: 250, labor: 100, other: 25 },
-    notes: "Waiting for police report and additional documentation.",
-    history: [
-      { date: "2024-01-10", action: "Claim submitted", user: "System" },
-      { date: "2024-01-11", action: "Assessment completed", user: "Lisa Park" },
-      { date: "2024-01-12", action: "Moved to awaiting docs", user: "Lisa Park" },
-    ],
-  },
-  {
-    id: "CLM-004",
-    vehicle: { plate: "GHI-789", model: "Volkswagen Golf" },
-    renter: "Maria Garcia",
-    incidentDate: "2024-01-08",
-    estimatedCost: 800,
-    assignee: "Tom Wilson",
-    status: "approved",
-    description: "Scratches on driver side door from shopping cart.",
-    photos: ["scratch1.jpg"],
-    costBreakdown: { parts: 200, labor: 150, other: 50 },
-    notes: "Approved for repair. Customer satisfied with resolution.",
-    history: [
-      { date: "2024-01-08", action: "Claim submitted", user: "System" },
-      { date: "2024-01-09", action: "Assessment completed", user: "Tom Wilson" },
-      { date: "2024-01-10", action: "Approved", user: "Tom Wilson" },
-    ],
-  },
-  {
-    id: "CLM-005",
-    vehicle: { plate: "JKL-012", model: "Ford Focus" },
-    renter: "David Brown",
-    incidentDate: "2024-01-05",
-    estimatedCost: 150,
-    assignee: "Sarah Wilson",
-    status: "rejected",
-    description: "Tire puncture claimed as vehicle defect.",
-    photos: ["tire1.jpg"],
-    costBreakdown: { parts: 120, labor: 30, other: 0 },
-    notes: "Rejected - normal wear and tear, not covered by insurance.",
-    history: [
-      { date: "2024-01-05", action: "Claim submitted", user: "System" },
-      { date: "2024-01-06", action: "Assessment completed", user: "Sarah Wilson" },
-      { date: "2024-01-07", action: "Rejected", user: "Sarah Wilson" },
-    ],
-  },
-]
+interface UiClaim {
+  dbId: string
+  id: string
+  vehicle: { plate: string; model: string }
+  renter: string
+  incidentDate: string
+  estimatedCost: number
+  assignee: string
+  status: string
+  description: string
+  photos: string[]
+  costBreakdown: { parts: number; labor: number; other: number }
+  notes: string
+  history: { date: string; action: string; user: string }[]
+}
+
+// Removed mockClaims; data is now loaded from the database
 
 const statusColumns = [
   { id: "new", title: "New", color: "bg-blue-100 text-blue-800" },
@@ -112,8 +41,10 @@ const statusColumns = [
 ]
 
 export function ClaimsContent() {
-  const [claims, setClaims] = useState(mockClaims)
-  const [selectedClaim, setSelectedClaim] = useState<(typeof mockClaims)[0] | null>(null)
+  const { organization } = useSupabase()
+  const [claims, setClaims] = useState<UiClaim[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedClaim, setSelectedClaim] = useState<UiClaim | null>(null)
   const [filters, setFilters] = useState({
     status: "all",
     vehicle: "",
@@ -121,21 +52,91 @@ export function ClaimsContent() {
     dateRange: "",
   })
 
-  const handleDragStart = (e: React.DragEvent, claimId: string) => {
-    e.dataTransfer.setData("text/plain", claimId)
+  // Transform initialClaims from DB shape to UI shape
+  useEffect(() => {
+    const run = async () => {
+      if (!organization?.id) {
+        setClaims([])
+        setLoading(false)
+        return
+      }
+      setLoading(true)
+      try {
+        const orgId = organization?.id
+        const rows = orgId ? await listClaimsWithRefs(orgId, { limit: 200 }) : []
+        console.debug('ClaimsContent: fetched rows', rows?.length ?? 0, 'orgId=', orgId)
+        const dbToUiStatus = (s: string) => {
+          const v = (s || '').toLowerCase()
+          if (v.includes('submit')) return 'new'
+          if (v.includes('review') || v.includes('assess')) return 'assessing'
+          if (v.includes('await')) return 'awaiting-docs'
+          if (v.includes('approve') || v.includes('paid') || v.includes('close')) return 'approved'
+          if (v.includes('reject')) return 'rejected'
+          return 'assessing'
+        }
+        const transformed: UiClaim[] = (rows || []).map((c: any) => ({
+          dbId: c.id,
+          id: c.claim_number || c.id,
+          vehicle: { plate: c.vehicles?.plate ?? '—', model: c.vehicles?.model ?? c.vehicles?.make ?? 'Vehicle' },
+          renter: c.customers ? `${c.customers.first_name ?? ''} ${c.customers.last_name ?? ''}`.trim() : '—',
+          incidentDate: c.incident_date ? new Date(c.incident_date).toISOString().split('T')[0] : '—',
+          estimatedCost: c.estimated_cost_eur ?? 0,
+          assignee: c.assignee ?? 'Unassigned',
+          status: dbToUiStatus(c.status || 'Submitted'),
+          description: c.description ?? '',
+          photos: [],
+          costBreakdown: { parts: c.estimated_cost_eur ?? 0, labor: 0, other: 0 },
+          notes: '',
+          history: [],
+        }))
+        setClaims(transformed)
+        if (transformed.length) setSelectedClaim(transformed[0])
+      } catch (e) {
+        console.error('ClaimsContent: Failed to load claims', e)
+        setClaims([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    run()
+  }, [organization?.id])
+
+  const handleDragStart = (e: React.DragEvent, claimDbId: string) => {
+    e.dataTransfer.setData("text/plain", claimDbId)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
   }
 
-  const handleDrop = (e: React.DragEvent, newStatus: string) => {
+  const handleDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault()
-    const claimId = e.dataTransfer.getData("text/plain")
-
-    setClaims((prevClaims) =>
-      prevClaims.map((claim) => (claim.id === claimId ? { ...claim, status: newStatus } : claim)),
-    )
+    const claimDbId = e.dataTransfer.getData("text/plain")
+    // Optimistic UI update
+    setClaims((prevClaims) => prevClaims.map((claim) => (claim.dbId === claimDbId ? { ...claim, status: newStatus } : claim)))
+    try {
+      if (organization?.id) {
+        const uiToDbStatus = (s: string) => {
+          switch (s) {
+            case 'new':
+              return 'Submitted'
+            case 'assessing':
+              return 'Under Review'
+            case 'awaiting-docs':
+              return 'Under Review'
+            case 'approved':
+              return 'Approved'
+            case 'rejected':
+              return 'Rejected'
+            default:
+              return 'Under Review'
+          }
+        }
+        await updateClaimStatus(claimDbId, uiToDbStatus(newStatus))
+      }
+    } catch (err) {
+      console.error('Failed to update claim status', err)
+    }
   }
 
   const filteredClaims = claims.filter((claim) => {
@@ -217,19 +218,21 @@ export function ClaimsContent() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-foreground">{column.title}</h3>
                 <Badge variant="secondary" className="text-xs">
-                  {filteredClaims.filter((claim) => claim.status === column.id).length}
+                  {loading ? '—' : filteredClaims.filter((claim) => claim.status === column.id).length}
                 </Badge>
               </div>
 
               <div className="space-y-3 flex-1">
-                {filteredClaims
+                {loading ? (
+                  <div className="text-xs text-muted-foreground">Loading claims…</div>
+                ) : filteredClaims
                   .filter((claim) => claim.status === column.id)
                   .map((claim) => (
                     <Card
                       key={claim.id}
                       className="cursor-pointer hover:shadow-md transition-shadow"
                       draggable
-                      onDragStart={(e) => handleDragStart(e, claim.id)}
+                      onDragStart={(e) => handleDragStart(e, claim.dbId)}
                       onClick={() => setSelectedClaim(claim)}
                     >
                       <CardHeader className="pb-2">
@@ -436,7 +439,7 @@ export function ClaimsContent() {
                   <Button variant="outline" size="sm">
                     Request Docs
                   </Button>
-                  <Button size="sm">Move Status</Button>
+                  <Button size="sm" disabled={!selectedClaim}>Move Status</Button>
                 </div>
               </div>
             </>
