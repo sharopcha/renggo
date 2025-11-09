@@ -1,3 +1,8 @@
+-- Insert sample organization first
+insert into public.organizations (id, name, tax_register_number, settings)
+values ('1baaf78c-3719-45bc-9cf8-d3b3b3059006', 'Renggo Fleet Services', 'EE123456789', '{"currency": "EUR", "timezone": "Europe/Tallinn"}'::jsonb);
+
+-- Insert sample vehicles
 insert into public.vehicles
   (organization_id, vehicle_class, plate, vin, make, model, year, photo_url,
    odometer_km, location, utilization_pct, base_daily_rate_eur, lifetime_revenue_eur,
@@ -136,3 +141,159 @@ values
    'Active', false, null,
    2, 0, 156.00, 4.4,
    '1998-12-21', 'Student, verification documents submitted');
+
+-- Insert sample rentals
+-- Get customer and vehicle IDs for reference
+DO $$
+DECLARE
+  v_org_id uuid := '1baaf78c-3719-45bc-9cf8-d3b3b3059006';
+  v_customer1_id uuid;
+  v_customer2_id uuid;
+  v_customer3_id uuid;
+  v_customer4_id uuid;
+  v_vehicle1_id uuid;
+  v_vehicle2_id uuid;
+  v_vehicle3_id uuid;
+  v_vehicle4_id uuid;
+  v_vehicle5_id uuid;
+  v_vehicle6_id uuid;
+  v_rental1_id uuid := gen_random_uuid();
+  v_rental2_id uuid := gen_random_uuid();
+  v_rental3_id uuid := gen_random_uuid();
+  v_rental4_id uuid := gen_random_uuid();
+  v_rental5_id uuid := gen_random_uuid();
+  v_rental6_id uuid := gen_random_uuid();
+  v_rental7_id uuid := gen_random_uuid();
+  v_rental8_id uuid := gen_random_uuid();
+  v_rental9_id uuid := gen_random_uuid();
+  v_rental10_id uuid := gen_random_uuid();
+BEGIN
+  -- Get customer IDs
+  SELECT id INTO v_customer1_id FROM public.customers WHERE email = 'maria.tamm@email.ee' LIMIT 1;
+  SELECT id INTO v_customer2_id FROM public.customers WHERE email = 'andrus.kask@gmail.com' LIMIT 1;
+  SELECT id INTO v_customer3_id FROM public.customers WHERE email = 'laura.magi@yahoo.com' LIMIT 1;
+  SELECT id INTO v_customer4_id FROM public.customers WHERE email = 'kristjan.saar@hotmail.com' LIMIT 1;
+  
+  -- Get vehicle IDs
+  SELECT id INTO v_vehicle1_id FROM public.vehicles WHERE plate = 'EST-1234' LIMIT 1;
+  SELECT id INTO v_vehicle2_id FROM public.vehicles WHERE plate = 'EST-2345' LIMIT 1;
+  SELECT id INTO v_vehicle3_id FROM public.vehicles WHERE plate = 'EST-3456' LIMIT 1;
+  SELECT id INTO v_vehicle4_id FROM public.vehicles WHERE plate = 'EST-6789' LIMIT 1;
+  SELECT id INTO v_vehicle5_id FROM public.vehicles WHERE plate = 'EST-0123' LIMIT 1;
+  SELECT id INTO v_vehicle6_id FROM public.vehicles WHERE plate = 'EST-1122' LIMIT 1;
+
+  -- Insert completed rentals
+  INSERT INTO public.rentals (id, organization_id, vehicle_id, customer_id, start_date, end_date, status, pickup_location, return_location, pickup_city, return_city, price_eur, deposit_eur, insurance_eur, extras_eur, odometer_start, odometer_end, created_at)
+  VALUES
+    (v_rental1_id, v_org_id, v_vehicle1_id, v_customer1_id, 
+     '2024-12-15 10:00:00+00', '2024-12-18 10:00:00+00', 'completed',
+     'Tallinn Airport', 'Tallinn City Center', 'Tallinn', 'Tallinn',
+     87.00, 200.00, 15.00, 0, 47800, 48100, '2024-12-10 14:30:00+00'),
+    
+    (v_rental2_id, v_org_id, v_vehicle2_id, v_customer2_id,
+     '2024-12-20 09:00:00+00', '2024-12-23 09:00:00+00', 'completed',
+     'Tallinn Downtown', 'Tallinn Downtown', 'Tallinn', 'Tallinn',
+     135.00, 300.00, 20.00, 10.00, 25600, 25850, '2024-12-15 11:20:00+00'),
+    
+    (v_rental3_id, v_org_id, v_vehicle3_id, v_customer3_id,
+     '2025-01-05 14:00:00+00', '2025-01-08 14:00:00+00', 'completed',
+     'Tallinn Port', 'Tallinn Port', 'Tallinn', 'Tallinn',
+     177.00, 400.00, 25.00, 30.00, 93500, 93820, '2025-01-02 09:15:00+00'),
+    
+    (v_rental4_id, v_org_id, v_vehicle4_id, v_customer1_id,
+     '2025-01-10 08:00:00+00', '2025-01-12 18:00:00+00', 'completed',
+     'Tallinn City Center', 'Tallinn Airport', 'Tallinn', 'Tallinn',
+     130.00, 250.00, 18.00, 0, 36800, 37020, '2025-01-08 16:45:00+00'),
+    
+    (v_rental5_id, v_org_id, v_vehicle5_id, v_customer4_id,
+     '2024-12-28 11:00:00+00', '2024-12-31 11:00:00+00', 'completed',
+     'Tallinn Central', 'Tallinn Central', 'Tallinn', 'Tallinn',
+     147.00, 300.00, 22.00, 15.00, 188500, 188680, '2024-12-22 13:00:00+00');
+
+  -- Insert active rental
+  INSERT INTO public.rentals (id, organization_id, vehicle_id, customer_id, start_date, end_date, status, pickup_location, return_location, pickup_city, return_city, price_eur, deposit_eur, insurance_eur, extras_eur, odometer_start, created_at)
+  VALUES
+    (v_rental6_id, v_org_id, v_vehicle6_id, v_customer2_id,
+     '2025-01-08 10:00:00+00', '2025-01-11 10:00:00+00', 'active',
+     'Tartu City Center', 'Tartu City Center', 'Tartu', 'Tartu',
+     126.00, 250.00, 18.00, 0, 30800, '2025-01-05 15:30:00+00');
+
+  -- Insert upcoming rentals
+  INSERT INTO public.rentals (id, organization_id, vehicle_id, customer_id, start_date, end_date, status, pickup_location, return_location, pickup_city, return_city, price_eur, deposit_eur, insurance_eur, extras_eur, created_at)
+  VALUES
+    (v_rental7_id, v_org_id, v_vehicle1_id, v_customer3_id,
+     '2025-01-20 09:00:00+00', '2025-01-24 09:00:00+00', 'upcoming',
+     'Tallinn Airport', 'Tallinn Airport', 'Tallinn', 'Tallinn',
+     116.00, 200.00, 20.00, 0, '2025-01-15 10:00:00+00'),
+    
+    (v_rental8_id, v_org_id, v_vehicle4_id, v_customer1_id,
+     '2025-01-25 14:00:00+00', '2025-01-28 14:00:00+00', 'upcoming',
+     'Tallinn City Center', 'Tallinn City Center', 'Tallinn', 'Tallinn',
+     195.00, 300.00, 25.00, 10.00, '2025-01-18 11:30:00+00');
+
+  -- Insert cancelled rentals
+  INSERT INTO public.rentals (id, organization_id, vehicle_id, customer_id, start_date, end_date, status, pickup_location, return_location, pickup_city, return_city, price_eur, deposit_eur, insurance_eur, notes, created_at)
+  VALUES
+    (v_rental9_id, v_org_id, v_vehicle2_id, v_customer4_id,
+     '2025-01-12 11:00:00+00', '2025-01-15 11:00:00+00', 'cancelled',
+     'Tallinn Downtown', 'Tallinn Downtown', 'Tallinn', 'Tallinn',
+     135.00, 300.00, 0, 'Customer cancelled 3 days before pickup', '2025-01-05 09:00:00+00'),
+    
+    (v_rental10_id, v_org_id, v_vehicle3_id, v_customer2_id,
+     '2024-12-22 10:00:00+00', '2024-12-25 10:00:00+00', 'cancelled',
+     'Tallinn Port', 'Tallinn Port', 'Tallinn', 'Tallinn',
+     177.00, 400.00, 0, 'Vehicle unavailable due to maintenance', '2024-12-18 14:00:00+00');
+
+  -- Insert payments for completed rentals
+  INSERT INTO public.payments (organization_id, rental_id, customer_id, type, amount_eur, status, method, method_details, transaction_id, processor_fee_eur, platform_fee_eur, processed_at, created_at)
+  VALUES
+    -- Rental 1 payments
+    (v_org_id, v_rental1_id, v_customer1_id, 'charge', 302.00, 'succeeded', 'card', 'Visa •••• 4242', 'ch_1Abc123', 9.06, 45.30, '2024-12-15 10:05:00+00', '2024-12-15 10:01:00+00'),
+    (v_org_id, v_rental1_id, v_customer1_id, 'refund', 200.00, 'succeeded', 'card', 'Visa •••• 4242', 're_1Abc124', 0, 0, '2024-12-18 11:00:00+00', '2024-12-18 10:30:00+00'),
+    
+    -- Rental 2 payments
+    (v_org_id, v_rental2_id, v_customer2_id, 'charge', 465.00, 'succeeded', 'card', 'Mastercard •••• 5555', 'ch_1Def456', 13.95, 69.75, '2024-12-20 09:05:00+00', '2024-12-20 09:01:00+00'),
+    (v_org_id, v_rental2_id, v_customer2_id, 'refund', 300.00, 'succeeded', 'card', 'Mastercard •••• 5555', 're_1Def457', 0, 0, '2024-12-23 10:00:00+00', '2024-12-23 09:30:00+00'),
+    
+    -- Rental 3 payments
+    (v_org_id, v_rental3_id, v_customer3_id, 'charge', 632.00, 'succeeded', 'card', 'Visa •••• 1234', 'ch_1Ghi789', 18.96, 94.80, '2025-01-05 14:05:00+00', '2025-01-05 14:01:00+00'),
+    (v_org_id, v_rental3_id, v_customer3_id, 'refund', 400.00, 'succeeded', 'card', 'Visa •••• 1234', 're_1Ghi790', 0, 0, '2025-01-08 15:00:00+00', '2025-01-08 14:30:00+00'),
+    
+    -- Rental 4 payments
+    (v_org_id, v_rental4_id, v_customer1_id, 'charge', 398.00, 'succeeded', 'card', 'Visa •••• 4242', 'ch_1Jkl012', 11.94, 59.70, '2025-01-10 08:05:00+00', '2025-01-10 08:01:00+00'),
+    (v_org_id, v_rental4_id, v_customer1_id, 'refund', 250.00, 'succeeded', 'card', 'Visa •••• 4242', 're_1Jkl013', 0, 0, '2025-01-12 19:00:00+00', '2025-01-12 18:30:00+00'),
+    
+    -- Rental 5 payments
+    (v_org_id, v_rental5_id, v_customer4_id, 'charge', 484.00, 'succeeded', 'bank_transfer', 'Bank Transfer EE123', 'bt_1Mno345', 5.00, 72.60, '2024-12-28 11:05:00+00', '2024-12-28 11:01:00+00'),
+    (v_org_id, v_rental5_id, v_customer4_id, 'refund', 300.00, 'succeeded', 'bank_transfer', 'Bank Transfer EE123', 'bt_1Mno346', 0, 0, '2024-12-31 12:00:00+00', '2024-12-31 11:30:00+00'),
+    
+    -- Rental 6 (active) - charge only
+    (v_org_id, v_rental6_id, v_customer2_id, 'charge', 394.00, 'succeeded', 'card', 'Mastercard •••• 5555', 'ch_1Pqr678', 11.82, 59.10, '2025-01-08 10:05:00+00', '2025-01-08 10:01:00+00'),
+    
+    -- Rental 7 (upcoming) - pending payment
+    (v_org_id, v_rental7_id, v_customer3_id, 'charge', 336.00, 'pending', 'card', 'Visa •••• 1234', null, 0, 0, null, '2025-01-15 10:05:00+00'),
+    
+    -- Rental 8 (upcoming) - failed then succeeded
+    (v_org_id, v_rental8_id, v_customer1_id, 'charge', 530.00, 'failed', 'card', 'Visa •••• 9999', null, 0, 0, null, '2025-01-18 11:35:00+00'),
+    (v_org_id, v_rental8_id, v_customer1_id, 'charge', 530.00, 'succeeded', 'card', 'Visa •••• 4242', 'ch_1Stu901', 15.90, 79.50, '2025-01-18 11:45:00+00', '2025-01-18 11:40:00+00'),
+    
+    -- Rental 9 (cancelled) - refund
+    (v_org_id, v_rental9_id, v_customer4_id, 'charge', 435.00, 'succeeded', 'card', 'Visa •••• 6789', 'ch_1Vwx234', 13.05, 65.25, '2025-01-05 09:05:00+00', '2025-01-05 09:01:00+00'),
+    (v_org_id, v_rental9_id, v_customer4_id, 'refund', 435.00, 'succeeded', 'card', 'Visa •••• 6789', 're_1Vwx235', 0, 0, '2025-01-09 10:00:00+00', '2025-01-09 09:30:00+00');
+
+  -- Insert platform fees as separate payment records
+  INSERT INTO public.payments (organization_id, rental_id, type, amount_eur, status, method, description, processed_at, created_at)
+  VALUES
+    (v_org_id, v_rental1_id, 'fee', 15.30, 'succeeded', 'platform_fee', 'Platform service fee', '2024-12-18 12:00:00+00', '2024-12-18 12:00:00+00'),
+    (v_org_id, v_rental2_id, 'fee', 24.75, 'succeeded', 'platform_fee', 'Platform service fee', '2024-12-23 12:00:00+00', '2024-12-23 12:00:00+00'),
+    (v_org_id, v_rental3_id, 'fee', 34.20, 'succeeded', 'platform_fee', 'Platform service fee', '2025-01-08 16:00:00+00', '2025-01-08 16:00:00+00'),
+    (v_org_id, v_rental4_id, 'fee', 21.90, 'succeeded', 'platform_fee', 'Platform service fee', '2025-01-12 20:00:00+00', '2025-01-12 20:00:00+00'),
+    (v_org_id, v_rental5_id, 'fee', 26.10, 'succeeded', 'platform_fee', 'Platform service fee', '2024-12-31 13:00:00+00', '2024-12-31 13:00:00+00');
+
+  -- Insert payouts
+  INSERT INTO public.payouts (organization_id, amount_eur, status, method, bank_account, transaction_id, period_start, period_end, scheduled_date, processed_date, notes, created_at)
+  VALUES
+    (v_org_id, 1250.00, 'succeeded', 'bank_transfer', 'EE123456789012345678', 'po_2024_12', '2024-12-01 00:00:00+00', '2024-12-31 23:59:59+00', '2025-01-05 00:00:00+00', '2025-01-05 10:30:00+00', 'December 2024 payout', '2024-12-31 12:00:00+00'),
+    (v_org_id, 2450.00, 'pending', 'bank_transfer', 'EE123456789012345678', null, '2025-01-01 00:00:00+00', '2025-01-31 23:59:59+00', '2025-02-05 00:00:00+00', null, 'January 2025 payout scheduled', '2025-01-31 12:00:00+00');
+
+END $$;
