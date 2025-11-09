@@ -297,3 +297,31 @@ BEGIN
     (v_org_id, 2450.00, 'pending', 'bank_transfer', 'EE123456789012345678', null, '2025-01-01 00:00:00+00', '2025-01-31 23:59:59+00', '2025-02-05 00:00:00+00', null, 'January 2025 payout scheduled', '2025-01-31 12:00:00+00');
 
 END $$;
+
+-- Insert sample maintenance tasks and notes
+DO $$
+DECLARE
+  v_org_id uuid := '1baaf78c-3719-45bc-9cf8-d3b3b3059006';
+  v_vehicle1_id uuid;
+  v_vehicle2_id uuid;
+  v_vehicle3_id uuid;
+  v_task1_id uuid := gen_random_uuid();
+  v_task2_id uuid := gen_random_uuid();
+  v_task3_id uuid := gen_random_uuid();
+BEGIN
+  SELECT id INTO v_vehicle1_id FROM public.vehicles WHERE plate = 'EST-1234' LIMIT 1; -- Toyota Corolla
+  SELECT id INTO v_vehicle2_id FROM public.vehicles WHERE plate = 'EST-1122' LIMIT 1; -- Nissan Qashqai
+  SELECT id INTO v_vehicle3_id FROM public.vehicles WHERE plate = 'EST-0123' LIMIT 1; -- Ford Transit
+
+  INSERT INTO public.maintenance_tasks (id, organization_id, vehicle_id, vehicle_label, task, description, due_date, due_km, severity, status, assignee)
+  VALUES
+    (v_task1_id, v_org_id, v_vehicle1_id, 'Toyota Corolla (EST-1234)', 'Oil Change & Filter', 'Regular oil change and filter replacement. Check fluid levels and tire pressure.', '2025-11-15', 50000, 'Low', 'Open', 'Mike Johnson'),
+    (v_task2_id, v_org_id, v_vehicle2_id, 'Nissan Qashqai (EST-1122)', 'Brake Pad Replacement', 'Front brake pads showing wear indicators. Immediate replacement required.', '2025-11-12', 32000, 'High', 'In Progress', 'Sarah Wilson'),
+    (v_task3_id, v_org_id, v_vehicle3_id, 'Ford Transit (EST-0123)', 'Engine Diagnostic', 'Check engine light activated. Full diagnostic scan required.', '2025-11-10', 190000, 'High', 'Open', 'David Chen');
+
+  INSERT INTO public.maintenance_task_notes (task_id, content, visibility)
+  VALUES
+    (v_task2_id, 'Ordered OEM brake pads', 'Internal'),
+    (v_task2_id, 'Customer notified of timeline', 'Internal'),
+    (v_task3_id, 'Customer reports rough idling', 'Internal');
+END $$;
