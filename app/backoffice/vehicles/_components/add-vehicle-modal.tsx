@@ -10,11 +10,20 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Upload, Car, X } from "lucide-react"
+import { z } from "zod"
 
 interface AddVehicleModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
+
+const schema = z.object({
+  plate: z.string().min(2, "Min 2 chars"),
+  name: z.string().min(2, "Min 2 chars"),
+});
+
+type FormValues = z.infer<typeof schema>;
+
 
 export function AddVehicleModal({ open, onOpenChange }: AddVehicleModalProps) {
   const [formData, setFormData] = useState({

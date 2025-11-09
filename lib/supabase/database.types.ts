@@ -34,6 +34,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          average_rating: number | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          drivers_license_expiry: string | null
+          drivers_license_number: string | null
+          drivers_license_verified: boolean | null
+          email: string
+          first_name: string
+          id: string
+          is_verified: boolean | null
+          last_name: string
+          lifetime_spend_eur: number | null
+          metadata: Json | null
+          notes: string | null
+          organization_id: string
+          phone: string | null
+          postal_code: string | null
+          status: string | null
+          total_cancellations: number | null
+          total_trips: number | null
+          updated_at: string | null
+          verification_date: string | null
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          average_rating?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          drivers_license_expiry?: string | null
+          drivers_license_number?: string | null
+          drivers_license_verified?: boolean | null
+          email: string
+          first_name: string
+          id?: string
+          is_verified?: boolean | null
+          last_name: string
+          lifetime_spend_eur?: number | null
+          metadata?: Json | null
+          notes?: string | null
+          organization_id: string
+          phone?: string | null
+          postal_code?: string | null
+          status?: string | null
+          total_cancellations?: number | null
+          total_trips?: number | null
+          updated_at?: string | null
+          verification_date?: string | null
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          average_rating?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          drivers_license_expiry?: string | null
+          drivers_license_number?: string | null
+          drivers_license_verified?: boolean | null
+          email?: string
+          first_name?: string
+          id?: string
+          is_verified?: boolean | null
+          last_name?: string
+          lifetime_spend_eur?: number | null
+          metadata?: Json | null
+          notes?: string | null
+          organization_id?: string
+          phone?: string | null
+          postal_code?: string | null
+          status?: string | null
+          total_cancellations?: number | null
+          total_trips?: number | null
+          updated_at?: string | null
+          verification_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string | null
